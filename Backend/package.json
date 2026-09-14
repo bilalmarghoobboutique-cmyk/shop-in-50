@@ -1,0 +1,19 @@
+{
+  "name": "rupee-50-store",
+  "version": "1.0.0",
+  "description": "Shop in 50 Rupees Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.1.0",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.6"
+  }
+}

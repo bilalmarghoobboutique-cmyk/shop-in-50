@@ -1,0 +1,40 @@
+# ============ DEPENDENCIES ============
+node_modules/
+*/node_modules/
+**/node_modules/
+
+# ============ ENVIRONMENT (SECRET - NEVER PUSH!) ============
+.env
+*.env
+Backend/.env
+
+# ============ DATA FILES (LOCAL DATA) ============
+orders.json
+products.json
+payments.json
+settings.json
+Backend/orders.json
+Backend/products.json
+Backend/payments.json
+Backend/settings.json
+
+# ============ UPLOADS (USER CONTENT) ============
+uploads/
+Backend/uploads/
+
+# ============ LOGS ============
+*.log
+npm-debug.log*
+
+# ============ OS FILES ============
+.DS_Store
+Thumbs.db
+
+# ============ IDE ============
+.vscode/
+.idea/
+
+# ============ SECRETS (IMPORTANT!) ============
+app passwords/
+frontend/app passwords/
+**/app passwords/
