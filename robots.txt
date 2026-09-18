@@ -1,0 +1,18 @@
+# Shop in 50 Rupees — Robots.txt
+# Allow all search engines to crawl the website
+
+User-agent: *
+Allow: /
+
+# Block admin panel from search engines
+Disallow: /admin.html
+Disallow: /checkout.html
+
+# Block API endpoints
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://shopin50rupees.com/sitemap.xml
+
+# Crawl delay for politeness
+Crawl-delay: 1
