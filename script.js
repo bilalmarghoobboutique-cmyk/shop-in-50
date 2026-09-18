@@ -2390,7 +2390,7 @@ async function fetchProductDetails(productId) {
         (product.photos || []).forEach(function (photo, index) {
             media.push({
                 type: "image",
-                src: `http://localhost:5000${photo}`,
+                src: `https://shop-in-50-backend-production.up.railway.app${photo}`,
                 index
             });
         });
@@ -2398,7 +2398,7 @@ async function fetchProductDetails(productId) {
         if (product.video) {
             media.push({
                 type: "video",
-                src: `http://localhost:5000${product.video}`,
+                src: `https://shop-in-50-backend-production.up.railway.app${product.video}`,
                 index: media.length
             });
         }
