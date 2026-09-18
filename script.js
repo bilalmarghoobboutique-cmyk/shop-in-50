@@ -15,7 +15,7 @@ const SALE_THRESHOLD = 40;
 const FIXED_DELIVERY_CHARGE = 300;
 const DELIVERY_CHARGE_PER_ITEM = 15;
 
-const API_BASE_URL = "https://shop-in-50-backend-production.up.railway.app";
+const API_BASE_URL = "https://shop-in-50-backend-production-3c9c.up.railway.app";
 
 const STORE_WHATSAPP_NUMBER = "923266501314";
 const EASYPaisa_NUMBER = "03266501314";
@@ -2390,7 +2390,7 @@ async function fetchProductDetails(productId) {
         (product.photos || []).forEach(function (photo, index) {
             media.push({
                 type: "image",
-                src: `https://shop-in-50-backend-production.up.railway.app${photo}`,
+                src: `https://shop-in-50-backend-production-3c9c.up.railway.app${photo}`,
                 index
             });
         });
@@ -2398,7 +2398,7 @@ async function fetchProductDetails(productId) {
         if (product.video) {
             media.push({
                 type: "video",
-                src: `https://shop-in-50-backend-production.up.railway.app${product.video}`,
+                src: `https://shop-in-50-backend-production-3c9c.up.railway.app${product.video}`,
                 index: media.length
             });
         }
@@ -2858,7 +2858,7 @@ async function loadProductsFromAPI() {
             .map(function (product) {
 
                 const image = product.photos?.[0]
-                    ? `https://shop-in-50-backend-production.up.railway.app${product.photos[0]}`
+                    ? `https://shop-in-50-backend-production-3c9c.up.railway.app${product.photos[0]}`
                     : null;
 
                 const emoji = product.emoji || "📦";
@@ -2941,7 +2941,7 @@ async function loadProductsFromAPI() {
             <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #dc3545;">
                 <div style="font-size: 50px; margin-bottom: 15px;">⚠️</div>
                 <h3>Products load nahi ho sake</h3>
-                <p>Server chal raha hai? (https://shop-in-50-backend-production.up.railway.app)</p>
+                <p>Server chal raha hai? (https://shop-in-50-backend-production-3c9c.up.railway.app)</p>
             </div>
         `;
     }
