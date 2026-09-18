@@ -15,7 +15,7 @@ const SALE_THRESHOLD = 40;
 const FIXED_DELIVERY_CHARGE = 300;
 const DELIVERY_CHARGE_PER_ITEM = 15;
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "https://shop-in-50-backend-production.up.railway.app";
 
 const STORE_WHATSAPP_NUMBER = "923266501314";
 const EASYPaisa_NUMBER = "03266501314";
