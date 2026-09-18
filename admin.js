@@ -5,7 +5,7 @@
    ADMIN DASHBOARD
    ========================================================= */
 
-const API_BASE_URL = "https://github.com/bilalmarghoobboutique-cmyk/shop-in-50/blob/main/admin.js";
+const API_BASE_URL = "https://shop-in-50-backend-production.up.railway.app";
 
 const TOKEN_KEY = "rupee50_admin_token";
 
@@ -1103,7 +1103,7 @@ function getMediaUrl(value) {
         return value;
     }
 
-    return `https://github.com/bilalmarghoobboutique-cmyk/shop-in-50/blob/main/admin.js${
+    return `https://shop-in-50-backend-production.up.railway.app${
         value.startsWith("/") ? value : `/${value}`
     }`;
 }
