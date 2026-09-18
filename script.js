@@ -2858,7 +2858,7 @@ async function loadProductsFromAPI() {
             .map(function (product) {
 
                 const image = product.photos?.[0]
-                    ? `http://localhost:5000${product.photos[0]}`
+                    ? `https://shop-in-50-backend-production.up.railway.app${product.photos[0]}`
                     : null;
 
                 const emoji = product.emoji || "📦";
@@ -2941,7 +2941,7 @@ async function loadProductsFromAPI() {
             <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #dc3545;">
                 <div style="font-size: 50px; margin-bottom: 15px;">⚠️</div>
                 <h3>Products load nahi ho sake</h3>
-                <p>Server chal raha hai? (localhost:5000)</p>
+                <p>Server chal raha hai? (https://shop-in-50-backend-production.up.railway.app)</p>
             </div>
         `;
     }
