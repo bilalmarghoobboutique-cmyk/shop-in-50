@@ -5,7 +5,7 @@
    ADMIN DASHBOARD
    ========================================================= */
 
-const API_BASE_URL = "https://shop-in-50-backend-production.up.railway.app";
+const API_BASE_URL = "https://shop-in-50-backend-production-3c9c.up.railway.app";
 
 const TOKEN_KEY = "rupee50_admin_token";
 
@@ -1103,7 +1103,7 @@ function getMediaUrl(value) {
         return value;
     }
 
-    return `https://shop-in-50-backend-production.up.railway.app${
+    return `https://shop-in-50-backend-production-3c9c.up.railway.app${
         value.startsWith("/") ? value : `/${value}`
     }`;
 }
