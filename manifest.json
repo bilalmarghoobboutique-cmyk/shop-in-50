@@ -1,0 +1,23 @@
+{
+    "name": "Shop in 50 Rupees",
+    "short_name": "Rs.50 Store",
+    "description": "Pakistan ki multi-category online store. 40+ products complete karein aur Rs.50 SALE unlock karein!",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#101828",
+    "theme_color": "#101828",
+    "orientation": "portrait",
+    "lang": "en-PK",
+    "icons": [
+        {
+            "src": "/images/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
