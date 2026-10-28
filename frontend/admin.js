@@ -17,13 +17,12 @@ let ordersCache = [];
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadLocalProducts(); // Load products from browser memory
-    
+    loadLocalProducts(); 
     attachAdminListeners();
 
     if (adminToken) {
         showDashboard();
-        renderProducts(); // Render saved products
+        renderProducts();
     } else {
         showLogin();
     }
@@ -38,12 +37,9 @@ function attachAdminListeners() {
 
     document.getElementById("loginForm")?.addEventListener("submit", loginAdmin);
     document.getElementById("logoutButton")?.addEventListener("click", logoutAdmin);
-    
-    // Product Form Submit
     document.getElementById("productForm")?.addEventListener("submit", saveProduct);
     document.getElementById("cancelProductEdit")?.addEventListener("click", resetProductForm);
 
-    // Refresh Buttons
     document.getElementById("refreshOrdersButton")?.addEventListener("click", () => {
         alert("Orders backend server ke baghair load nahi ho sakte.");
     });
@@ -65,7 +61,7 @@ function attachAdminListeners() {
 
 
 /* =========================================================
-   LOGIN (Frontend Only)
+   LOGIN
 ========================================================= */
 
 async function loginAdmin(event) {
@@ -81,7 +77,7 @@ async function loginAdmin(event) {
             adminToken = "local_admin_token_" + Date.now();
             localStorage.setItem(TOKEN_KEY, adminToken);
             showDashboard();
-            renderProducts(); // Load products on login
+            renderProducts(); 
         } else {
             showMessage("loginMessage", "❌ Ghalat Username ya Password! (Username: admin, Password: Sidrabilal1#)", "error");
         }
@@ -115,16 +111,7 @@ function loadLocalProducts() {
         if (saved) {
             productsCache = JSON.parse(saved);
         } else {
-            // Default dummy product to show initially
-            productsCache = [{
-                id: "demo-1",
-                name: "Sample Product",
-                category: "electronics",
-                stock: 10,
-                emoji: "📦",
-                description: "Yeh ek demo product hai.",
-                active: true
-            }];
+            productsCache = []; // Start empty
         }
     } catch (e) {
         productsCache = [];
@@ -132,6 +119,7 @@ function loadLocalProducts() {
 }
 
 function saveLocalProducts() {
+    // Ye line customer website ko batati hai ke naye products aaye hain
     localStorage.setItem("rupee50_admin_products", JSON.stringify(productsCache));
 }
 
@@ -152,14 +140,12 @@ async function saveProduct(event) {
     }
 
     if (editingId) {
-        // Edit existing
         const index = productsCache.findIndex(p => String(p.id) === String(editingId));
         if (index !== -1) {
-            productsCache[index] = { ...productsCache[index], name, category, stock, emoji, description, active };
+            productsCache[index] = { ...productsCache[index], name, category, stock: Number(stock) || 0, emoji, description, active };
             showMessage("productFormMessage", "✓ Product update ho gaya!", "success");
         }
     } else {
-        // Add new
         const newProduct = {
             id: "prod-" + Date.now(),
             name,
@@ -168,7 +154,7 @@ async function saveProduct(event) {
             emoji,
             description,
             active,
-            photos: [] // Photo upload backend ke baghair kaam nahi karega, isliye khali
+            photos: []
         };
         productsCache.push(newProduct);
         showMessage("productFormMessage", "✓ Naya product save ho gaya!", "success");
@@ -213,7 +199,6 @@ function renderProducts() {
         `;
     }).join("");
 
-    // Attach listeners
     grid.querySelectorAll("[data-edit-product]").forEach(button => {
         button.addEventListener("click", () => editProduct(button.dataset.editProduct));
     });

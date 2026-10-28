@@ -26,19 +26,6 @@ let congratsShownForThisCart = false;
 let currentDetailMedia = [];
 let currentDetailMediaIndex = 0;
 
-// Dummy Products for Frontend Testing
-const DUMMY_PRODUCTS = [
-    { id: "1", name: "Smartphone 5G", category: "electronics", description: "Latest 5G smartphone with 108MP camera.", emoji: "📱" },
-    { id: "2", name: "Wireless Headphones", category: "audio-headphones", description: "Noise cancelling bluetooth headphones.", emoji: "🎧" },
-    { id: "3", name: "Gaming Console", category: "gaming", description: "Next-gen gaming console with controller.", emoji: "🎮" },
-    { id: "4", name: "Leather Wallet", category: "bags-wallets", description: "Premium leather wallet for men.", emoji: "👜" },
-    { id: "5", name: "Running Shoes", category: "shoes-footwear", description: "Comfortable running shoes for daily use.", emoji: "👟" },
-    { id: "6", name: "Smart Watch", category: "wearable-tech", description: "Fitness tracker with heart rate monitor.", emoji: "⌚" },
-    { id: "7", name: "Coffee Maker", category: "kitchen-dining", description: "Automatic coffee maker for home.", emoji: "☕" },
-    { id: "8", name: "LED Desk Lamp", category: "lighting", description: "Eye-caring LED desk lamp.", emoji: "💡" }
-];
-
-
 document.addEventListener("DOMContentLoaded", function () {
     initializeStore();
 });
@@ -65,8 +52,8 @@ function initializeStore() {
     togglePaymentDetails();
     scheduleSaleProgressPopup();
     
-    // Load dummy products instead of API
-    loadProductsFromFrontend();
+    // Load products from admin (LocalStorage) instead of API
+    loadProductsFromLocal();
 }
 
 function attachEventListeners() {
@@ -647,12 +634,9 @@ async function placeOrder(event) {
     const originalText = button?.textContent || "🔒 Place Order Securely";
     if (button) { button.disabled = true; button.textContent = "⏳ Processing Order..."; }
 
-    // FRONTEND ORDER PROCESSING (No API)
     setTimeout(() => {
         try {
-            // Generate fake order number
             const fakeOrderNum = "ORD-" + Math.floor(100000 + Math.random() * 900000);
-            
             lastPlacedOrder = {
                 orderNumber: fakeOrderNum,
                 customer: orderData.customer,
@@ -660,7 +644,6 @@ async function placeOrder(event) {
                 payment: { ...orderData.payment, status: "Pending" },
                 pricing: orderData.pricing
             };
-
             showOrderConfirmation(lastPlacedOrder);
             cart = []; saveCart(); congratsShownForThisCart = false;
             updateCartUI(); updateSaleOfferMessage(); updateSaleProgressPopupContent();
@@ -795,7 +778,7 @@ function filterProducts(category) {
     });
     const searchInput = document.getElementById("searchInput"); if (searchInput) searchInput.value = "";
     const noProducts = document.getElementById("noProductsMessage");
-    if (noProducts) { noProducts.classList.toggle("hidden", visibleCount !== 0); noProducts.style.display = visibleCount === 0 ? "block" : "none"; }
+    if (noProducts) { noProducts.classList.toggle("hidden", visibleCount !== 0); noProducts.style.display = visibleCount === 0 ? "none" : "block"; }
     setText("activeFilter", `Showing ${normalized === "all" ? "All Products" : formatCategory(normalized)}`);
     document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
 }
@@ -895,21 +878,55 @@ function clearCheckoutMessage() {
     element.textContent = ""; element.className = "checkout-message"; element.style.display = "none";
 }
 
-function loadProductsFromFrontend() {
+// === YEH HAI ASAL FIX ===
+function loadProductsFromLocal() {
     const grid = document.getElementById("productsGrid");
     if (!grid) return;
 
-    grid.innerHTML = DUMMY_PRODUCTS.map(product => {
+    // Browser memory se products uthayen
+    let products = [];
+    try {
+        const saved = localStorage.getItem("rupee50_admin_products");
+        if (saved) products = JSON.parse(saved);
+    } catch (e) {
+        products = [];
+    }
+
+    // Agar admin ne kuch add nahi kiya, tu yeh default products dikhayen
+    if (products.length === 0) {
+        products = [
+            { id: "def-1", name: "Sample Smartphone", category: "electronics", description: "Latest 5G smartphone with 108MP camera.", emoji: "📱" },
+            { id: "def-2", name: "Wireless Headphones", category: "audio-headphones", description: "Noise cancelling bluetooth headphones.", emoji: "🎧" },
+            { id: "def-3", name: "Gaming Console", category: "gaming", description: "Next-gen gaming console with controller.", emoji: "🎮" },
+            { id: "def-4", name: "Leather Wallet", category: "bags-wallets", description: "Premium leather wallet for men.", emoji: "👜" }
+        ];
+    }
+
+    // Sirf woh products dikhayen jo Active hain
+    const activeProducts = products.filter(p => p.active !== false);
+
+    if (activeProducts.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #667085;">
+                <div style="font-size: 50px; margin-bottom: 15px;">📦</div>
+                <h3 style="color: #101828; margin-bottom: 8px;">No products available</h3>
+                <p>Admin panel se products add karein.</p>
+            </div>
+        `;
+        return;
+    }
+
+    grid.innerHTML = activeProducts.map(product => {
         const categoryLabel = formatCategory(product.category);
         return `
             <article class="product-card" data-id="${escapeAttribute(product.id)}" data-category="${escapeAttribute(product.category)}" data-name="${escapeAttribute(product.name)}" data-emoji="${escapeAttribute(product.emoji)}">
                 <div class="product-image">
-                    <div class="product-placeholder">${escapeHtml(product.emoji)}</div>
+                    <div class="product-placeholder">${escapeHtml(product.emoji || "📦")}</div>
                 </div>
                 <div class="product-info">
                     <span class="product-category">${escapeHtml(categoryLabel)}</span>
                     <h3>${escapeHtml(product.name)}</h3>
-                    <p class="product-description">${escapeHtml(product.description)}</p>
+                    <p class="product-description">${escapeHtml(product.description || "")}</p>
                     <div class="product-price">Rs.100 <span>/ item</span></div>
                     <p class="sale-note">🔥 40+ total items = Rs.50 each</p>
                     <button type="button" class="add-to-cart-button">Add to Cart</button>
@@ -965,7 +982,7 @@ document.addEventListener("DOMContentLoaded", function() {
     window.addEventListener("resize", () => { if (window.innerWidth > 768) closeCategoriesTab(); });
 });
 
-// Export functions to window for global access (checkout.html needs some)
+// Exports
 window.addToCart = addToCart;
 window.openCart = openCart;
 window.closeCart = closeCart;
