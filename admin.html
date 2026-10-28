@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Shop in 50 Rupees | Admin Dashboard
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="admin.css"
+    >
+
+</head>
+
+<body>
+
+<!-- ================= LOGIN ================= -->
+
+<section
+    id="loginSection"
+    class="login-page"
+>
+
+    <div class="login-card">
+
+        <div class="admin-brand">
+            <div class="admin-logo">
+                ₨
+            </div>
+
+            <span>
+                SHOP IN 50 RUPEES
+            </span>
+        </div>
+
+        <h1>
+            Admin Login
+        </h1>
+
+        <p>
+            Secure store management dashboard
+        </p>
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label for="adminUsername">
+                    Username
+                </label>
+
+                <input
+                    id="adminUsername"
+                    type="text"
+                    required
+                    autocomplete="username"
+                    placeholder="Admin username"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="adminPassword">
+                    Password
+                </label>
+
+                <input
+                    id="adminPassword"
+                    type="password"
+                    required
+                    autocomplete="current-password"
+                    placeholder="Admin password"
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="primary-admin-button"
+            >
+                🔐 Login To Dashboard
+            </button>
+
+        </form>
+
+        <div
+            id="loginMessage"
+            class="admin-message"
+        ></div>
+
+        <a
+            href="index.html"
+            class="back-store"
+        >
+            ← Back To Store
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<section
+    id="dashboardSection"
+    class="dashboard-page hidden"
+>
+
+<header class="admin-header">
+
+    <div class="admin-header-inner">
+
+        <div>
+
+            <span>
+                ADMIN PANEL
+            </span>
+
+            <h1>
+                Shop in 50 Rupees
+            </h1>
+
+        </div>
+
+        <div class="admin-header-actions">
+
+            <a
+                href="index.html"
+                class="header-button"
+            >
+                View Store
+            </a>
+
+            <button
+                type="button"
+                id="logoutButton"
+                class="logout-button"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="dashboard-container">
+
+    <!-- ================= STATS ================= -->
+
+    <section class="stats-grid">
+
+        <article class="stat-card">
+
+            <span>
+                TOTAL ORDERS
+            </span>
+
+            <strong id="totalOrders">
+                0
+            </strong>
+
+        </article>
+
+
+        <article class="stat-card">
+
+            <span>
+                PENDING ORDERS
+            </span>
+
+            <strong id="pendingOrders">
+                0
+            </strong>
+
+        </article>
+
+
+        <article class="stat-card">
+
+            <span>
+                TOTAL SALES
+            </span>
+
+            <strong id="totalSales">
+                Rs.0
+            </strong>
+
+        </article>
+
+
+        <article class="stat-card">
+
+            <span>
+                PRODUCTS
+            </span>
+
+            <strong id="totalProducts">
+                0
+            </strong>
+
+        </article>
+
+    </section>
+
+
+    <!-- ================= ORDERS ================= -->
+
+    <section class="admin-panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <span>
+                    ORDER MANAGEMENT
+                </span>
+
+                <h2>
+                    Customer Orders
+                </h2>
+
+            </div>
+
+            <button
+                type="button"
+                id="refreshOrdersButton"
+                class="panel-button"
+            >
+                ↻ Refresh
+            </button>
+
+        </div>
+
+
+        <div
+            id="ordersLoading"
+            class="loading-message hidden"
+        >
+            Loading orders...
+        </div>
+
+
+        <div
+            id="ordersEmpty"
+            class="empty-message hidden"
+        >
+            No orders found.
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="orders-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Order
+                        </th>
+
+                        <th>
+                            Customer
+                        </th>
+
+                        <th>
+                            Payment
+                        </th>
+
+                        <th>
+                            Total
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="ordersTableBody"></tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= PRODUCTS ================= -->
+
+    <section class="admin-panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <span>
+                    PRODUCT MANAGEMENT
+                </span>
+
+                <h2>
+                    Store Products
+                </h2>
+
+            </div>
+
+            <button
+                type="button"
+                id="refreshProductsButton"
+                class="panel-button"
+            >
+                ↻ Refresh
+            </button>
+
+        </div>
+
+
+        <form
+            id="productForm"
+            class="product-form"
+        >
+
+            <input
+                type="hidden"
+                id="editingProductId"
+            >
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="productName">
+                        Product Name *
+                    </label>
+
+                    <input
+                        id="productName"
+                        type="text"
+                        required
+                        maxlength="250"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="productCategory">
+                        Category *
+                    </label>
+
+                    <select
+                        id="productCategory"
+                        required
+                    >
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                        <option value="electronics">
+                            Electronics
+                        </option>
+
+                        <option value="fashion">
+                            Fashion
+                        </option>
+
+                        <option value="home">
+                            Home & Living
+                        </option>
+
+                        <option value="toys">
+                            Toys
+                        </option>
+
+                        <option value="beauty">
+                            Beauty
+                        </option>
+
+                        <option value="computers">
+                            Computers
+                        </option>
+
+                        <option value="books">
+                            Books & Stationery
+                        </option>
+
+                        <option value="sports">
+                            Sports
+                        </option>
+
+                        <option value="automotive">
+                            Automotive
+                        </option>
+
+                        <option value="mobile-accessories">
+                            Mobile Accessories
+                        </option>
+
+                        <option value="gaming">
+                            Gaming
+                        </option>
+
+                        <option value="furniture">
+                            Furniture
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- 
+                    ⚠️ PRICE INPUT HATAYA — 
+                    Price system automatically handle karta hai:
+                    1-39 = Rs.100, 40+ = Rs.50
+                -->
+
+
+                <div class="form-group">
+
+                    <label for="productStock">
+                        Stock Quantity *
+                    </label>
+
+                    <input
+                        id="productStock"
+                        type="number"
+                        min="0"
+                        step="1"
+                        value="0"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="productEmoji">
+                        Product Emoji
+                    </label>
+
+                    <input
+                        id="productEmoji"
+                        type="text"
+                        maxlength="10"
+                        placeholder="📦"
+                    >
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label for="productDetails">
+                        Product Details *
+                    </label>
+
+                    <textarea
+                        id="productDetails"
+                        rows="4"
+                        maxlength="10000"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="productPhotos">
+                        Product Photos
+                    </label>
+
+                    <input
+                        id="productPhotos"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/gif"
+                        multiple
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="productVideo">
+                        Product Video
+                    </label>
+
+                    <input
+                        id="productVideo"
+                        type="file"
+                        accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                    >
+
+                </div>
+
+
+                <div class="form-group checkbox-group">
+
+                    <label>
+
+                        <input
+                            id="productActive"
+                            type="checkbox"
+                            checked
+                        >
+
+                        Product Active
+
+                    </label>
+
+                </div>
+
+
+                <div
+                    id="editProductOptions"
+                    class="form-group checkbox-group hidden"
+                >
+
+                    <label>
+
+                        <input
+                            id="replacePhotos"
+                            type="checkbox"
+                        >
+
+                        Replace Existing Photos
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="primary-admin-button"
+                >
+                    Save Product
+                </button>
+
+                <button
+                    type="button"
+                    id="cancelProductEdit"
+                    class="secondary-admin-button hidden"
+                >
+                    Cancel Edit
+                </button>
+
+            </div>
+
+
+            <div
+                id="productFormMessage"
+                class="admin-message"
+            ></div>
+
+        </form>
+
+
+        <div
+            id="productsLoading"
+            class="loading-message hidden"
+        >
+            Loading products...
+        </div>
+
+
+        <div
+            id="productsEmpty"
+            class="empty-message hidden"
+        >
+            No admin products found.
+        </div>
+
+
+        <div
+            id="adminProductsGrid"
+            class="admin-products-grid"
+        ></div>
+
+    </section>
+
+        <!-- ================= STATISTICS ================= -->
+
+    <section class="admin-panel">
+
+        <div class="panel-header">
+
+            <div>
+                <span>FINANCIAL REPORT</span>
+                <h2>Statistics Dashboard</h2>
+            </div>
+
+            <button
+                type="button"
+                id="refreshStatsButton"
+                class="panel-button"
+            >
+                ↻ Refresh
+            </button>
+
+        </div>
+
+        <!-- ================= TABS ================= -->
+        <!-- PERIOD TABS -->
+<div class="stats-tabs" id="periodTabs">
+    <button type="button" class="stats-tab active" data-period="daily">📅 Daily</button>
+    <button type="button" class="stats-tab" data-period="weekly">📆 Weekly</button>
+    <button type="button" class="stats-tab" data-period="monthly">🗓️ Monthly</button>
+    <button type="button" class="stats-tab" data-period="yearly">📊 Yearly</button>
+    <button type="button" class="stats-tab" data-period="allTime">🏆 All Time</button>
+</div>
+
+<!-- STATUS TABS (NEW) -->
+<div class="stats-status-tabs" id="statusTabs">
+    <button type="button" class="status-tab active" data-status="all">📦 All Orders</button>
+    <button type="button" class="status-tab pending" data-status="pending">⏳ Pending</button>
+    <button type="button" class="status-tab confirmed" data-status="confirmed">✅ Confirmed</button>
+    <button type="button" class="status-tab processing" data-status="processing">⚙️ Processing</button>
+    <button type="button" class="status-tab shipped" data-status="shipped">🚚 Shipped</button>
+    <button type="button" class="status-tab delivered" data-status="delivered">🎉 Delivered</button>
+    <button type="button" class="status-tab cancelled" data-status="cancelled">❌ Cancelled</button>
+</div>
+
+        <!-- ================= SUMMARY CARDS ================= -->
+        <div class="stats-summary-grid" id="statsSummaryGrid">
+
+            <div class="stat-summary-card">
+                <span>ORDERS</span>
+                <strong id="statsOrders">0</strong>
+            </div>
+
+            <div class="stat-summary-card">
+                <span>PRODUCTS SOLD</span>
+                <strong id="statsProductsSold">0</strong>
+            </div>
+
+            <div class="stat-summary-card gold">
+                <span>TOTAL REVENUE</span>
+                <strong id="statsRevenue">Rs.0</strong>
+            </div>
+
+            <div class="stat-summary-card">
+                <span>PRODUCT REVENUE</span>
+                <strong id="statsProductRevenue">Rs.0</strong>
+            </div>
+
+            <div class="stat-summary-card">
+                <span>DELIVERY REVENUE</span>
+                <strong id="statsDeliveryRevenue">Rs.0</strong>
+            </div>
+
+            <div class="stat-summary-card green">
+                <span>AVG ORDER VALUE</span>
+                <strong id="statsAvgOrder">Rs.0</strong>
+            </div>
+
+        </div>
+
+        <!-- ================= CHART ================= -->
+        <div class="stats-chart-container">
+
+            <h3>📈 Monthly Revenue (Last 12 Months)</h3>
+
+            <div class="stats-chart" id="statsChart"></div>
+
+        </div>
+
+        <!-- ================= MONTHLY BREAKDOWN TABLE ================= -->
+        <div class="stats-table-container">
+
+            <h3>📊 Monthly Breakdown</h3>
+
+            <div class="table-wrapper">
+
+                <table class="stats-table">
+
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Orders</th>
+                            <th>Products</th>
+                            <th>Product Revenue</th>
+                            <th>Delivery</th>
+                            <th>Total Revenue</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="monthlyBreakdownBody"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- ================= PRODUCT-WISE SALE ================= -->
+        <div class="stats-table-container">
+
+            <h3>🏆 Top Selling Products</h3>
+
+            <div class="table-wrapper">
+
+                <table class="stats-table">
+
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity Sold</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="topProductsBody"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- ================= STOCK LIST ================= -->
+        <div class="stats-table-container">
+
+            <h3>📦 Stock Status</h3>
+
+            <div class="stats-stock-summary" id="stockSummaryBox">
+
+                <div class="stock-badge in-stock">
+                    ✅ In Stock: <span id="stockInStock">0</span>
+                </div>
+
+                <div class="stock-badge low-stock">
+                    ⚠️ Low Stock: <span id="stockLowStock">0</span>
+                </div>
+
+                <div class="stock-badge out-of-stock">
+                    ❌ Out of Stock: <span id="stockOutOfStock">0</span>
+                </div>
+
+                <div class="stock-badge total-value">
+                    💰 Stock Value: <span id="stockTotalValue">Rs.0</span>
+                </div>
+
+            </div>
+
+            <div class="table-wrapper">
+
+                <table class="stats-table">
+
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Stock</th>
+                            <th>Sold</th>
+                            <th>Price</th>
+                            <th>Stock Value</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="stockListBody"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ================= SETTINGS ================= -->
+
+    <section class="admin-panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <span>
+                    STORE SETTINGS
+                </span>
+
+                <h2>
+                    Contact Information
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <form id="settingsForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="settingsEmail">
+                        Store Email
+                    </label>
+
+                    <input
+                        id="settingsEmail"
+                        type="email"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="settingsWhatsapp">
+                        WhatsApp Number
+                    </label>
+
+                    <input
+                        id="settingsWhatsapp"
+                        type="text"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="settingsEasypaisa">
+                        Easypaisa Number
+                    </label>
+
+                    <input
+                        id="settingsEasypaisa"
+                        type="text"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="settingsSupportHours">
+                        Support Hours
+                    </label>
+
+                    <input
+                        id="settingsSupportHours"
+                        type="text"
+                    >
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label for="settingsAddress">
+                        Store Address
+                    </label>
+
+                    <textarea
+                        id="settingsAddress"
+                        rows="3"
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="primary-admin-button"
+            >
+                Save Settings
+            </button>
+
+            <div
+                id="settingsMessage"
+                class="admin-message"
+            ></div>
+
+        </form>
+
+    </section>
+
+</main>
+
+
+<!-- ================= ORDER DETAILS MODAL ================= -->
+
+<div
+    id="orderDetailsModal"
+    class="admin-modal hidden"
+>
+
+    <div class="admin-modal-card">
+
+        <button
+            type="button"
+            class="modal-close"
+            data-close
+        >
+            ✕
+        </button>
+
+        <span>
+            ORDER DETAILS
+        </span>
+
+        <h2 id="orderDetailsNumber">
+            Order
+        </h2>
+
+        <div id="orderDetailsContent"></div>
+
+    </div>
+
+</div>
+
+
+<footer class="admin-footer">
+
+    Shop in 50 Rupees Admin Dashboard © 2026
+
+</footer>
+
+
+<script src="admin.js"></script>
+
+</body>
+</html>

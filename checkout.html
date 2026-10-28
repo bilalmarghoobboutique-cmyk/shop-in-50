@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Checkout | Shop in 50 Rupees</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            background: #f5f7fa;
+            padding: 30px 20px;
+            min-height: 100vh;
+        }
+
+        .checkout-window-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .checkout-window-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(16, 24, 40, 0.09);
+        }
+
+        .checkout-window-header h1 {
+            font-size: 30px;
+            color: #101828;
+            margin-bottom: 8px;
+            font-weight: 900;
+        }
+
+        .checkout-window-header p {
+            color: #667085;
+            font-size: 14px;
+        }
+
+        .checkout-window-close {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 42px;
+            height: 42px;
+            border: 0;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            font-size: 20px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            z-index: 100;
+            transition: transform 0.2s ease;
+        }
+
+        .checkout-window-close:hover {
+            transform: scale(1.1);
+            background: #b02a37;
+        }
+
+        .checkout-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .checkout-section {
+            display: block !important;
+        }
+
+        .sale-progress-popup,
+        .congrats-popup {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<button
+    type="button"
+    class="checkout-window-close"
+    id="closeWindowBtn"
+    title="Close Window"
+>✕</button>
+
+
+<div class="checkout-window-container">
+
+    <div class="checkout-window-header">
+        <h1>🧾 Complete Your Order</h1>
+        <p>Enter delivery details and place your order</p>
+    </div>
+
+
+    <form
+        id="checkoutForm"
+        class="checkout-form"
+        onsubmit="return false;"
+    >
+
+        <div class="checkout-card">
+
+            <h3>👤 Customer Information</h3>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="customerName">Full Name *</label>
+                    <input type="text" id="customerName" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customerPhone">Mobile Number *</label>
+                    <input type="tel" id="customerPhone" placeholder="03XXXXXXXXX" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customerEmail">Email Address *</label>
+                    <input type="email" id="customerEmail" placeholder="Enter your email address" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customerCity">City *</label>
+                    <input type="text" id="customerCity" placeholder="Enter your city" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="customerAddress">Complete Address *</label>
+                    <textarea id="customerAddress" rows="4" placeholder="House / Shop / Street / Area / City" required></textarea>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="checkout-card">
+
+            <h3>💳 Payment Method</h3>
+
+            <div class="form-group">
+                <label for="paymentMethod">Select Payment Method *</label>
+                <select id="paymentMethod" required>
+                    <option value="">Select payment method</option>
+                    <option value="cod">Cash on Delivery</option>
+                    <option value="easypaisa">Easypaisa</option>
+                </select>
+            </div>
+
+            <div id="codDetails" class="payment-details" style="display:none;">
+                <div class="payment-box cod-payment-box">
+                    <div class="payment-box-icon">💵</div>
+                    <div>
+                        <h4>Cash on Delivery</h4>
+                        <p>You will pay the complete order amount when your order is delivered.</p>
+                        <strong>No transaction ID is required.</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div id="easypaisaDetails" class="payment-details" style="display:none;">
+                <div class="payment-box">
+                    <div class="payment-box-icon">📱</div>
+                    <div>
+                        <h4>Advance Payment (Easypaisa)</h4>
+                        <p>Pay the order amount in advance through Easypaisa using the account number below.</p>
+
+                        <div class="payment-status-message">
+                            📱 Easypaisa Account: <strong>03266501314</strong>
+                        </div>
+
+                        <div class="payment-status-message">
+                            👤 Account Title: <strong>Syed Ahmed Bilal</strong>
+                        </div>
+
+                        <div class="form-group" style="margin-top:15px;">
+                            <label for="easypaisaTransactionId">
+                                Easypaisa Transaction / Reference ID *
+                            </label>
+                            <input type="text" id="easypaisaTransactionId" placeholder="Enter Easypaisa transaction ID" inputmode="numeric" autocomplete="off">
+                            <small>Enter the transaction/reference ID shown by Easypaisa after payment.</small>
+                            <div id="easypaisaValidationMessage" class="validation-message"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="checkout-card">
+            <h3>📝 Additional Information</h3>
+            <div class="form-group">
+                <label for="orderNotes">Order Notes</label>
+                <textarea id="orderNotes" rows="3" placeholder="Any special instructions? (Optional)"></textarea>
+            </div>
+        </div>
+
+
+        <div class="checkout-card">
+            <h3>🧾 Order Summary</h3>
+            <div id="checkoutProductsList" class="checkout-products-list"></div>
+        </div>
+
+
+        <div class="checkout-final-summary">
+
+            <div>
+                <span>Products</span>
+                <strong id="checkoutProductsTotal">Rs.0</strong>
+            </div>
+
+            <div>
+                <span>Delivery</span>
+                <strong id="checkoutDeliveryTotal">Rs.0</strong>
+            </div>
+
+            <div class="checkout-grand-total">
+                <span>Total Payable</span>
+                <strong id="checkoutGrandTotal">Rs.0</strong>
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="place-order-button"
+            id="placeOrderBtn"
+        >
+            🔒 Place Order Securely
+        </button>
+
+        <button
+            type="button"
+            class="back-to-cart-button"
+            id="backToCartBtn"
+        >
+            ← Close Window
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- ================= CONFIRMATION SECTION (hidden) ================= -->
+<section id="confirmationSection" class="confirmation-section hidden">
+    <div class="section-container">
+        <div class="confirmation-card">
+
+            <div class="confirmation-icon">✓</div>
+            <h2>Order Placed Successfully!</h2>
+            <p>Thank you for shopping with us.</p>
+
+            <div class="order-number-box">
+                <span>Order Number</span>
+                <strong id="confirmationOrderNumber">—</strong>
+            </div>
+
+            <div class="confirmation-details">
+                <div><span>Customer Name</span><strong id="confirmationName">—</strong></div>
+                <div><span>Mobile</span><strong id="confirmationPhone">—</strong></div>
+                <div><span>City</span><strong id="confirmationCity">—</strong></div>
+                <div><span>Payment Method</span><strong id="confirmationPaymentMethod">—</strong></div>
+                <div><span>Payment Status</span><strong id="confirmationPaymentStatus">—</strong></div>
+            </div>
+
+            <div class="confirmation-total-box">
+                <div><span>Products Total</span><strong id="confirmationProductsTotal">Rs.0</strong></div>
+                <div><span>Delivery Charges</span><strong id="confirmationDelivery">Rs.0</strong></div>
+                <div class="confirmation-grand-total"><span>Grand Total</span><strong id="confirmationGrandTotal">Rs.0</strong></div>
+            </div>
+
+            <div class="ordered-products-section">
+                <h3>🛍️ Ordered Products</h3>
+                <div id="orderedProducts"></div>
+            </div>
+
+            <div class="confirmation-actions">
+                <button type="button" class="confirmation-button print-invoice-button" id="printInvoiceBtn">
+                    <span class="button-icon">🖨️</span>
+                    <span>Print Invoice</span>
+                </button>
+
+                <button type="button" class="confirmation-button whatsapp-invoice-button" id="whatsappInvoiceBtn">
+                    <span class="button-icon">📱</span>
+                    <span>WhatsApp Invoice</span>
+                </button>
+
+                <button type="button" class="confirmation-button continue-shopping-button" id="closeConfirmBtn">
+                    <span class="button-icon">✕</span>
+                    <span>Close Window</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ================= HIDDEN SECTIONS ================= -->
+<section id="cartSection" class="cart-section hidden" style="display:none;">
+    <div class="section-container">
+        <div id="cartItemsList"></div>
+        <div id="cartSummary" style="display:none;">
+            <strong id="productsTotal">Rs.0</strong>
+            <strong id="deliveryCharges">Rs.0</strong>
+            <strong id="grandTotal">Rs.0</strong>
+        </div>
+        <div id="emptyCartMessage" style="display:none;"></div>
+        <div id="saleOfferBox"></div>
+        <div id="saleOfferTitle"></div>
+        <div id="saleOfferMessage"></div>
+    </div>
+</section>
+
+<div id="cartNotification" class="cart-notification"></div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+<script src="script.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    console.log("Checkout window loaded.");
+
+    forceHideSection("confirmationSection");
+    forceHideSection("cartSection");
+
+    try {
+        const saved = sessionStorage.getItem("rupee50_checkout_cart");
+
+        if (saved) {
+            const checkoutCart = JSON.parse(saved);
+
+            if (Array.isArray(checkoutCart) && checkoutCart.length > 0) {
+
+                cart = checkoutCart;
+                saveCart();
+
+                console.log("Checkout cart loaded:", cart.length, "items");
+
+                setTimeout(function () {
+                    renderCheckoutProducts();
+                    updateCheckoutSummary();
+                    togglePaymentDetails();
+                }, 100);
+            }
+        }
+    } catch (e) {
+        console.error("Failed to load checkout cart:", e);
+    }
+
+    hideSaleProgressPopup();
+
+    const congratsPopup = document.getElementById("congratsPopup");
+    if (congratsPopup) {
+        congratsPopup.classList.remove("show");
+    }
+
+    /* EVENT LISTENERS (CSP-safe — no onclick) */
+
+    const placeOrderBtn = document.getElementById("placeOrderBtn");
+    if (placeOrderBtn) {
+        placeOrderBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            placeOrder();
+        });
+    }
+
+    const closeWindowBtn = document.getElementById("closeWindowBtn");
+    if (closeWindowBtn) {
+        closeWindowBtn.addEventListener("click", function () {
+            window.close();
+        });
+    }
+
+    const backToCartBtn = document.getElementById("backToCartBtn");
+    if (backToCartBtn) {
+        backToCartBtn.addEventListener("click", function () {
+            window.close();
+        });
+    }
+
+    const closeConfirmBtn = document.getElementById("closeConfirmBtn");
+    if (closeConfirmBtn) {
+        closeConfirmBtn.addEventListener("click", function () {
+            window.close();
+        });
+    }
+
+    const paymentSelect = document.getElementById("paymentMethod");
+    if (paymentSelect) {
+        paymentSelect.addEventListener("change", togglePaymentDetails);
+    }
+
+    const printInvoiceBtn = document.getElementById("printInvoiceBtn");
+    if (printInvoiceBtn) {
+        printInvoiceBtn.addEventListener("click", printInvoice);
+    }
+
+    const whatsappInvoiceBtn = document.getElementById("whatsappInvoiceBtn");
+    if (whatsappInvoiceBtn) {
+        whatsappInvoiceBtn.addEventListener("click", sendWhatsAppInvoice);
+    }
+
+    console.log("Checkout event listeners attached successfully.");
+});
+
+window.proceedToCheckout = function () {
+    /* Already in checkout window */
+};
+</script>
+
+</body>
+</html>
