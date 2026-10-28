@@ -40,6 +40,11 @@ const app = express();
 
 const PORT = Number(process.env.PORT || 5000);
 
+/* PUBLIC URL (email links ke liye) */
+
+const PUBLIC_URL =
+    process.env.PUBLIC_URL || "https://shopin50rupees.com";
+
 /* STORE RULES */
 
 const PRICE_50 = 50;
@@ -307,7 +312,6 @@ app.get("/api/health", (_req, res) => {
 
 /* =========================================================
    TEST EMAIL ROUTE (Development Only)
-   Browser mein kholo: http://localhost:5000/api/test-email
 ========================================================= */
 
 app.get("/api/test-email", async (req, res) => {
@@ -478,7 +482,6 @@ app.get("/api/admin/statistics", requireAdmin, (req, res) => {
             "cancelled"
         ];
 
-        /* Helper: calculate stats for a set of orders */
         function calcStats(filteredOrders) {
             const stats = {
                 orders: 0,
@@ -525,9 +528,6 @@ app.get("/api/admin/statistics", requireAdmin, (req, res) => {
             return stats;
         }
 
-        /* =========================
-           FILTER BY PERIOD
-        ========================= */
         function filterByPeriod(orders, period) {
             return orders.filter(o => {
                 if (!o.createdAt) return false;
@@ -541,17 +541,11 @@ app.get("/api/admin/statistics", requireAdmin, (req, res) => {
             });
         }
 
-        /* =========================
-           FILTER BY STATUS
-        ========================= */
         function filterByStatus(orders, status) {
             if (!status || status === "all") return orders;
             return orders.filter(o => o.status === status);
         }
 
-        /* =========================
-           PERIOD STATS
-        ========================= */
         const periods = {
             daily: filterByPeriod(orders, "daily"),
             weekly: filterByPeriod(orders, "weekly"),
@@ -560,17 +554,11 @@ app.get("/api/admin/statistics", requireAdmin, (req, res) => {
             allTime: orders
         };
 
-        /* =========================
-           PERIOD + STATUS STATS
-        ========================= */
         const periodStatusStats = {};
         Object.keys(periods).forEach(period => {
             periodStatusStats[period] = {};
-
-            /* All orders in period */
             periodStatusStats[period].all = calcStats(periods[period]);
 
-            /* Each status separately */
             STATUSES.forEach(status => {
                 periodStatusStats[period][status] = calcStats(
                     filterByStatus(periods[period], status)
@@ -578,9 +566,6 @@ app.get("/api/admin/statistics", requireAdmin, (req, res) => {
             });
         });
 
-        /* =========================
-           STOCK SUMMARY
-        ========================= */
         const stockSummary = products.map(p => ({
             id: p.id,
             name: p.name || "Product",
@@ -595,9 +580,6 @@ app.get("/api/admin/statistics", requireAdmin, (req, res) => {
                 : "in_stock"
         })).sort((a, b) => a.stock - b.stock);
 
-        /* =========================
-           MONTHLY BREAKDOWN
-        ========================= */
         const monthlyBreakdown = [];
         for (let i = 11; i >= 0; i--) {
             const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
@@ -627,9 +609,6 @@ app.get("/api/admin/statistics", requireAdmin, (req, res) => {
             });
         }
 
-        /* =========================
-           SUMMARY
-        ========================= */
         const summary = {
             totalProducts: products.length,
             inStock: stockSummary.filter(s => s.status === "in_stock").length,
@@ -639,25 +618,17 @@ app.get("/api/admin/statistics", requireAdmin, (req, res) => {
             totalSold: stockSummary.reduce((sum, s) => sum + s.sold, 0)
         };
 
-        /* =========================
-           FINAL RESPONSE
-        ========================= */
         res.json({
             success: true,
             generatedAt: new Date().toISOString(),
-
-            /* Period data (with status breakdown) */
             daily: periodStatusStats.daily,
             weekly: periodStatusStats.weekly,
             monthly: periodStatusStats.monthly,
             yearly: periodStatusStats.yearly,
             allTime: periodStatusStats.allTime,
-
             monthlyBreakdown,
             stockSummary,
             summary,
-
-            /* Status labels for frontend */
             statuses: STATUSES
         });
 
@@ -755,12 +726,102 @@ const upload = multer({
     }
 });
 
-/* PRODUCT CATEGORIES */
+/* =========================================================
+   PRODUCT CATEGORIES — 60 CATEGORIES
+========================================================= */
 
 const ALLOWED_CATEGORIES = [
-    "electronics", "fashion", "home", "toys", "beauty",
-    "computers", "books", "sports", "automotive",
-    "mobile-accessories", "gaming", "furniture"
+
+    /* Electronics & Tech */
+    "electronics",
+    "computers-laptops",
+    "mobile-accessories",
+    "gaming",
+    "cameras-photography",
+    "audio-headphones",
+    "smart-home",
+    "tv-video",
+    "wearable-tech",
+    "drone-rc",
+
+    /* Fashion */
+    "mens-fashion",
+    "womens-fashion",
+    "kids-fashion",
+    "shoes-footwear",
+    "bags-wallets",
+    "jewellery-watches",
+    "sunglasses-eyewear",
+    "fashion-accessories",
+
+    /* Home & Living */
+    "home-living",
+    "furniture",
+    "kitchen-dining",
+    "home-decor",
+    "bedding-bath",
+    "garden-outdoor",
+    "lighting",
+    "storage-organization",
+
+    /* Beauty & Health */
+    "beauty-makeup",
+    "skincare",
+    "haircare",
+    "fragrances",
+    "health-wellness",
+    "personal-care",
+
+    /* Baby & Kids */
+    "baby-products",
+    "toys-games",
+    "kids-learning",
+
+    /* Sports & Fitness */
+    "sports-outdoors",
+    "fitness-equipment",
+    "cycling",
+    "water-sports",
+
+    /* Automotive */
+    "cars-automotive",
+    "motorcycle-parts",
+    "tools-hardware",
+    "car-accessories",
+
+    /* Books & Education */
+    "books",
+    "stationery",
+    "office-supplies",
+    "art-craft",
+
+    /* Food & Grocery */
+    "grocery-food",
+    "beverages",
+    "snacks-sweets",
+
+    /* Pets */
+    "pet-supplies",
+    "pet-food",
+
+    /* Miscellaneous */
+    "gift-items",
+    "party-supplies",
+    "musical-instruments",
+    "religious-items",
+    "industrial-supplies",
+    "books-novels",
+    "local-traditional",
+    "clearance-sale",
+
+    /* Legacy (purani categories ke liye) */
+    "fashion",
+    "home",
+    "toys",
+    "beauty",
+    "computers",
+    "sports",
+    "automotive"
 ];
 
 function validateCategory(category) {
@@ -1180,7 +1241,7 @@ function buildCustomerEmailHTML(order) {
             </div>
 
             <p style="text-align:center;color:#667085;font-size:12px;margin-top:15px;">
-                © Shop in 50 Rupees | 923266501314
+                © Shop in 50 Rupees | ${STORE_WHATSAPP}
             </p>
         </div>
     `;
@@ -1255,7 +1316,7 @@ function buildAdminEmailHTML(order) {
                 </p>
 
                 <p style="margin-top:25px;text-align:center;">
-                    <a href="http://localhost:5000/admin.html" style="background:#101828;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;display:inline-block;">
+                    <a href="${PUBLIC_URL}/admin.html" style="background:#101828;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;display:inline-block;">
                         View in Admin Panel
                     </a>
                 </p>
@@ -1277,9 +1338,7 @@ async function sendOrderNotifications(order) {
         adminEmail: null
     };
 
-    /* 1. Customer Email */
     if (customer.email) {
-
         results.customerEmail = await sendEmail(
             customer.email,
             `✅ Order Confirmed - ${order.orderNumber} | Shop in 50 Rupees`,
@@ -1287,11 +1346,9 @@ async function sendOrderNotifications(order) {
         );
     }
 
-    /* 2. Admin Email */
     const adminEmail = process.env.ADMIN_EMAIL;
 
     if (adminEmail) {
-
         results.adminEmail = await sendEmail(
             adminEmail,
             `🔔 NEW ORDER - ${order.orderNumber} - Rs.${Number(order.pricing?.grandTotal || 0)}`,
@@ -1578,11 +1635,9 @@ app.post("/api/orders", (req, res) => {
         console.log("==============================================");
         console.log("");
 
-        /* ============ 🔥 EMAIL NOTIFICATIONS ============ */
         sendOrderNotifications(order).catch(err =>
             console.error("❌ Email notification error:", err)
         );
-        /* =============================================== */
 
         res.status(201).json({
             success: true,
@@ -1862,7 +1917,7 @@ app.use((error, _req, res, _next) => {
    START SERVER
 ========================================================= */
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
     console.log("");
     console.log(
         "=============================================="
@@ -1882,6 +1937,7 @@ app.listen(PORT, () => {
         `Test Email: http://localhost:${PORT}/api/test-email`
     );
     console.log(`Frontend: http://localhost:${PORT}`);
+    console.log(`Public URL: ${PUBLIC_URL}`);
 
     console.log(
         "----------------------------------------------"
@@ -1904,6 +1960,12 @@ app.listen(PORT, () => {
     console.log(
         "21+ products = Rs.15 per item"
     );
+
+    console.log(
+        "----------------------------------------------"
+    );
+
+    console.log("CATEGORIES: 60 categories loaded");
 
     console.log(
         "----------------------------------------------"

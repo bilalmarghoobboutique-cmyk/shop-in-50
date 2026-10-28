@@ -4,19 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- ================= PRIMARY META ================= -->
     <title>Shop in 50 Rupees | Pakistan's Multi-Category Online Store</title>
 
-    <meta
-        name="description"
-        content="Shop in 50 Rupees — Pakistan ki multi-category online store. 40+ products complete karein aur poori cart sirf Rs.50 per item par unlock karein! Free home delivery."
-    >
-
-    <meta
-        name="keywords"
-        content="online shopping Pakistan, Rs.50 sale, 50 rupees store, multi-category store Pakistan, bulk shopping, cheap online shopping, Shop in 50 Rupees, Rs 50 store Pakistan"
-    >
-
+    <meta name="description" content="Shop in 50 Rupees — Pakistan ki multi-category online store. 40+ products complete karein aur poori cart sirf Rs.50 per item par unlock karein! Free home delivery.">
+    <meta name="keywords" content="online shopping Pakistan, Rs.50 sale, 50 rupees store, multi-category store Pakistan, bulk shopping, cheap online shopping, Shop in 50 Rupees, Rs 50 store Pakistan">
     <meta name="author" content="Syed Ahmed Bilal">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="googlebot" content="index, follow">
@@ -25,10 +16,8 @@
     <meta name="rating" content="general">
     <meta name="theme-color" content="#101828">
 
-    <!-- ================= CANONICAL ================= -->
     <link rel="canonical" href="https://shopin50rupees.com/">
 
-    <!-- ================= OPEN GRAPH (Facebook/WhatsApp) ================= -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Shop in 50 Rupees | Unlock Rs.50 Sale at 40+ Items">
     <meta property="og:description" content="Buy from multiple categories. Add 40 products and unlock Rs.50 per item on ALL products! Pakistan ki best online shopping store.">
@@ -40,7 +29,6 @@
     <meta property="og:image:alt" content="Shop in 50 Rupees - Multi-Category Online Store">
     <meta property="og:locale" content="en_PK">
 
-    <!-- ================= TWITTER / X ================= -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Shop in 50 Rupees | Unlock Rs.50 Sale at 40+ Items">
     <meta name="twitter:description" content="Buy from multiple categories. Add 40 products and unlock Rs.50 per item on ALL products!">
@@ -48,14 +36,12 @@
     <meta name="twitter:site" content="@shopin50rupees">
     <meta name="twitter:creator" content="@syedahmedbilal">
 
-    <!-- ================= FAVICON / ICONS ================= -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     <link rel="manifest" href="/manifest.json">
 
-    <!-- ================= STRUCTURED DATA (JSON-LD) ================= -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -77,59 +63,11 @@
             "contactType": "Customer Service",
             "areaServed": "PK",
             "availableLanguage": ["English", "Urdu"]
-        },
-        "sameAs": [
-            "https://www.facebook.com/shopin50rupees",
-            "https://www.instagram.com/shopin50rupees",
-            "https://www.youtube.com/@shopin50rupees"
-        ]
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Shop in 50 Rupees",
-        "url": "https://shopin50rupees.com/",
-        "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://shopin50rupees.com/search?q={search_term_string}",
-            "query-input": "required name=search_term_string"
         }
     }
     </script>
 
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Store",
-        "name": "Shop in 50 Rupees",
-        "image": "https://shopin50rupees.com/images/store-image.jpg",
-        "description": "Pakistan ki multi-category online shopping store",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Main Bazaar, Ghaziabad",
-            "addressLocality": "Lahore",
-            "addressRegion": "Punjab",
-            "postalCode": "54000",
-            "addressCountry": "PK"
-        },
-        "telephone": "+92-326-6501314",
-        "priceRange": "Rs.50 - Rs.100",
-        "openingHoursSpecification": {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": [
-                "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"
-            ],
-            "opens": "10:00",
-            "closes": "20:00"
-        }
-    }
-    </script>
-
-    <!-- ================= STYLESHEET ================= -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -154,8 +92,8 @@
 
             <nav class="main-nav">
                 <a href="#home">Home</a>
-                <a href="#categories">Categories</a>
                 <a href="#products">Products</a>
+                <a href="#categories">Categories</a>
                 <a href="#about">About Us</a>
                 <a href="#contact">Contact</a>
             </nav>
@@ -248,7 +186,44 @@
         </section>
 
 
+        <!-- ================= PRODUCTS SECTION (MOBILE PE PEHLE) ================= -->
+        <section id="products" class="products-section">
+            <div class="section-container">
+
+                <div class="section-heading">
+                    <span>OUR STORE</span>
+                    <h2>Featured Products</h2>
+                    <p>Add products from any category to your cart.</p>
+                </div>
+
+                <div id="productsGrid" class="products-grid"></div>
+
+                <div class="ad-slot ad-slot-inline" id="ad-slot-2">
+                    📢 Ad Space — Google AdSense code yahan aayega
+                </div>
+
+                <div id="noProductsMessage" class="no-products-message" style="display:none;">
+                    <h3>No products found</h3>
+                    <p>Try another search or category.</p>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= CATEGORIES SECTION (MOBILE PE TAB) ================= -->
         <section id="categories" class="categories-section">
+
+            <!-- Close button (mobile tab ke liye) -->
+            <button
+                type="button"
+                class="categories-tab-close"
+                id="categoriesTabClose"
+                aria-label="Close Categories"
+            >
+                ✕
+            </button>
+
             <div class="section-container">
 
                 <div class="section-heading">
@@ -259,85 +234,367 @@
 
                 <div class="categories-grid">
 
-                    <button type="button" class="category-card" data-category="electronics">
-                        <span>📱</span><h3>Electronics</h3>
-                    </button>
+    <button type="button" class="category-card" data-category="electronics">
+        <img src="images/categories/electronics.png" alt="Electronics" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">📱</span>
+        <h3>Electronics</h3>
+    </button>
 
-                    <button type="button" class="category-card" data-category="fashion">
-                        <span>👕</span><h3>Fashion</h3>
-                    </button>
+    <button type="button" class="category-card" data-category="computers-laptops">
+        <img src="images/categories/computers-laptops.png" alt="Computers" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">💻</span>
+        <h3>Computers & Laptops</h3>
+    </button>
 
-                    <button type="button" class="category-card" data-category="home">
-                        <span>🏠</span><h3>Home & Living</h3>
-                    </button>
+    <button type="button" class="category-card" data-category="mobile-accessories">
+        <img src="images/categories/mobile-accessories.png" alt="Mobile Accessories" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🔌</span>
+        <h3>Mobile Accessories</h3>
+    </button>
 
-                    <button type="button" class="category-card" data-category="toys">
-                        <span>🧸</span><h3>Toys</h3>
-                    </button>
+    <button type="button" class="category-card" data-category="gaming">
+        <img src="images/categories/gaming.png" alt="Gaming" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🎮</span>
+        <h3>Gaming</h3>
+    </button>
 
-                    <button type="button" class="category-card" data-category="beauty">
-                        <span>💄</span><h3>Beauty</h3>
-                    </button>
+    <button type="button" class="category-card" data-category="cameras-photography">
+        <img src="images/categories/cameras-photography.png" alt="Cameras" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">📷</span>
+        <h3>Cameras & Photography</h3>
+    </button>
 
-                    <button type="button" class="category-card" data-category="computers">
-                        <span>💻</span><h3>Computers</h3>
-                    </button>
+    <button type="button" class="category-card" data-category="audio-headphones">
+        <img src="images/categories/audio-headphones.png" alt="Audio" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🎧</span>
+        <h3>Audio & Headphones</h3>
+    </button>
 
-                    <button type="button" class="category-card" data-category="books">
-                        <span>📚</span><h3>Books & Stationery</h3>
-                    </button>
+    <button type="button" class="category-card" data-category="smart-home">
+        <img src="images/categories/smart-home.png" alt="Smart Home" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🏠</span>
+        <h3>Smart Home</h3>
+    </button>
 
-                    <button type="button" class="category-card" data-category="sports">
-                        <span>⚽</span><h3>Sports</h3>
-                    </button>
+    <button type="button" class="category-card" data-category="tv-video">
+        <img src="images/categories/tv-video.png" alt="TV & Video" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">📺</span>
+        <h3>TV & Video</h3>
+    </button>
 
-                    <button type="button" class="category-card" data-category="automotive">
-                        <span>🚗</span><h3>Automotive</h3>
-                    </button>
+    <button type="button" class="category-card" data-category="wearable-tech">
+        <img src="images/categories/wearable-tech.png" alt="Wearables" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">⌚</span>
+        <h3>Wearable Tech</h3>
+    </button>
 
-                    <button type="button" class="category-card" data-category="mobile-accessories">
-                        <span>🔌</span><h3>Mobile Accessories</h3>
-                    </button>
+    <button type="button" class="category-card" data-category="drone-rc">
+        <img src="images/categories/drone-rc.png" alt="Drones" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🚁</span>
+        <h3>Drone & RC</h3>
+    </button>
 
-                    <button type="button" class="category-card" data-category="gaming">
-                        <span>🎮</span><h3>Gaming</h3>
-                    </button>
+    <button type="button" class="category-card" data-category="mens-fashion">
+        <img src="images/categories/mens-fashion.png" alt="Men's Fashion" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">👔</span>
+        <h3>Men's Fashion</h3>
+    </button>
 
-                    <button type="button" class="category-card" data-category="furniture">
-                        <span>🛋️</span><h3>Furniture</h3>
-                    </button>
+    <button type="button" class="category-card" data-category="womens-fashion">
+        <img src="images/categories/womens-fashion.png" alt="Women's Fashion" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">👗</span>
+        <h3>Women's Fashion</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="kids-fashion">
+        <img src="images/categories/kids-fashion.png" alt="Kids Fashion" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🧒</span>
+        <h3>Kids Fashion</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="shoes-footwear">
+        <img src="images/categories/shoes-footwear.png" alt="Shoes" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">👟</span>
+        <h3>Shoes & Footwear</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="bags-wallets">
+        <img src="images/categories/bags-wallets.png" alt="Bags" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">👜</span>
+        <h3>Bags & Wallets</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="jewellery-watches">
+        <img src="images/categories/jewellery-watches.png" alt="Jewellery" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">💍</span>
+        <h3>Jewellery & Watches</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="sunglasses-eyewear">
+        <img src="images/categories/sunglasses-eyewear.png" alt="Sunglasses" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🕶️</span>
+        <h3>Sunglasses & Eyewear</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="fashion-accessories">
+        <img src="images/categories/fashion-accessories.png" alt="Fashion Accessories" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🎀</span>
+        <h3>Fashion Accessories</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="home-living">
+        <img src="images/categories/home-living.png" alt="Home & Living" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🏠</span>
+        <h3>Home & Living</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="furniture">
+        <img src="images/categories/furniture.png" alt="Furniture" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🛋️</span>
+        <h3>Furniture</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="kitchen-dining">
+        <img src="images/categories/kitchen-dining.png" alt="Kitchen & Dining" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🍽️</span>
+        <h3>Kitchen & Dining</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="home-decor">
+        <img src="images/categories/home-decor.png" alt="Home Decor" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🖼️</span>
+        <h3>Home Decor</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="bedding-bath">
+        <img src="images/categories/bedding-bath.png" alt="Bedding & Bath" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🛏️</span>
+        <h3>Bedding & Bath</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="garden-outdoor">
+        <img src="images/categories/garden-outdoor.png" alt="Garden & Outdoor" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🌱</span>
+        <h3>Garden & Outdoor</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="lighting">
+        <img src="images/categories/lighting.png" alt="Lighting" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">💡</span>
+        <h3>Lighting</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="storage-organization">
+        <img src="images/categories/storage-organization.png" alt="Storage" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">📦</span>
+        <h3>Storage & Organization</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="beauty-makeup">
+        <img src="images/categories/beauty-makeup.png" alt="Beauty & Makeup" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">💄</span>
+        <h3>Beauty & Makeup</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="skincare">
+        <img src="images/categories/skincare.png" alt="Skincare" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🧴</span>
+        <h3>Skincare</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="haircare">
+        <img src="images/categories/haircare.png" alt="Hair Care" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">💇</span>
+        <h3>Hair Care</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="fragrances">
+        <img src="images/categories/fragrances.png" alt="Fragrances" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🌸</span>
+        <h3>Fragrances</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="health-wellness">
+        <img src="images/categories/health-wellness.png" alt="Health" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">💊</span>
+        <h3>Health & Wellness</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="personal-care">
+        <img src="images/categories/personal-care.png" alt="Personal Care" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🪥</span>
+        <h3>Personal Care</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="baby-products">
+        <img src="images/categories/baby-products.png" alt="Baby Products" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🍼</span>
+        <h3>Baby Products</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="toys-games">
+        <img src="images/categories/toys-games.png" alt="Toys & Games" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🧸</span>
+        <h3>Toys & Games</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="kids-learning">
+        <img src="images/categories/kids-learning.png" alt="Kids Learning" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">📚</span>
+        <h3>Kids Learning</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="sports-outdoors">
+        <img src="images/categories/sports-outdoors.png" alt="Sports" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">⚽</span>
+        <h3>Sports & Outdoors</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="fitness-equipment">
+        <img src="images/categories/fitness-equipment.png" alt="Fitness" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🏋️</span>
+        <h3>Fitness Equipment</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="cycling">
+        <img src="images/categories/cycling.png" alt="Cycling" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🚴</span>
+        <h3>Cycling</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="water-sports">
+        <img src="images/categories/water-sports.png" alt="Water Sports" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🏊</span>
+        <h3>Water Sports</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="cars-automotive">
+        <img src="images/categories/cars-automotive.png" alt="Automotive" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🚗</span>
+        <h3>Cars & Automotive</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="motorcycle-parts">
+        <img src="images/categories/motorcycle-parts.png" alt="Motorcycle" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🏍️</span>
+        <h3>Motorcycle Parts</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="tools-hardware">
+        <img src="images/categories/tools-hardware.png" alt="Tools" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🔧</span>
+        <h3>Tools & Hardware</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="car-accessories">
+        <img src="images/categories/car-accessories.png" alt="Car Accessories" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🚙</span>
+        <h3>Car Accessories</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="books">
+        <img src="images/categories/books.png" alt="Books" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">📚</span>
+        <h3>Books</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="stationery">
+        <img src="images/categories/stationery.png" alt="Stationery" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">✏️</span>
+        <h3>Stationery</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="office-supplies">
+        <img src="images/categories/office-supplies.png" alt="Office" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">📎</span>
+        <h3>Office Supplies</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="art-craft">
+        <img src="images/categories/art-craft.png" alt="Art & Craft" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🎨</span>
+        <h3>Art & Craft</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="grocery-food">
+        <img src="images/categories/grocery-food.png" alt="Grocery" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🥗</span>
+        <h3>Grocery & Food</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="beverages">
+        <img src="images/categories/beverages.png" alt="Beverages" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">☕</span>
+        <h3>Beverages</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="snacks-sweets">
+        <img src="images/categories/snacks-sweets.png" alt="Snacks" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🍫</span>
+        <h3>Snacks & Sweets</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="pet-supplies">
+        <img src="images/categories/pet-supplies.png" alt="Pet Supplies" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🐾</span>
+        <h3>Pet Supplies</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="pet-food">
+        <img src="images/categories/pet-food.png" alt="Pet Food" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🦴</span>
+        <h3>Pet Food</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="gift-items">
+        <img src="images/categories/gift-items.png" alt="Gifts" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🎁</span>
+        <h3>Gift Items</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="party-supplies">
+        <img src="images/categories/party-supplies.png" alt="Party" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🎂</span>
+        <h3>Party Supplies</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="musical-instruments">
+        <img src="images/categories/musical-instruments.png" alt="Music" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🎵</span>
+        <h3>Musical Instruments</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="religious-items">
+        <img src="images/categories/religious-items.png" alt="Religious" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🕌</span>
+        <h3>Religious Items</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="industrial-supplies">
+        <img src="images/categories/industrial-supplies.png" alt="Industrial" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🏭</span>
+        <h3>Industrial Supplies</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="books-novels">
+        <img src="images/categories/books-novels.png" alt="Novels" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">📖</span>
+        <h3>Books & Novels</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="local-traditional">
+        <img src="images/categories/local-traditional.png" alt="Local & Traditional" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🇵🇰</span>
+        <h3>Local & Traditional</h3>
+    </button>
+
+    <button type="button" class="category-card" data-category="clearance-sale">
+        <img src="images/categories/clearance-sale.png" alt="Sale" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <span style="display:none;">🔥</span>
+        <h3>Clearance & Sale</h3>
+    </button>
 
                 </div>
-            </div>
-        </section>
-
-
-        <section id="products" class="products-section">
-            <div class="section-container">
-
-                <div class="section-heading">
-                    <span>OUR STORE</span>
-                    <h2>Featured Products</h2>
-                    <p>Add products from any category to your cart.</p>
-                </div>
-
-                <div id="productsGrid" class="products-grid">
-                    <!-- Products yahan JavaScript se load honge -->
-                </div>
-
-                <div class="ad-slot ad-slot-inline" id="ad-slot-2">
-                    📢 Ad Space — Google AdSense code yahan aayega
-                </div>
-
-                <div
-                    id="noProductsMessage"
-                    class="no-products-message"
-                    style="display:none;"
-                >
-                    <h3>No products found</h3>
-                    <p>Try another search or category.</p>
-                </div>
-
             </div>
         </section>
 
@@ -415,7 +672,8 @@
         </section>
 
 
-        <section id="cartSection" class="cart-section">
+        <!-- ================= CART SECTION ================= -->
+        <section id="cartSection" class="cart-section hidden">
             <div class="section-container">
 
                 <div class="section-heading">
@@ -486,7 +744,8 @@
         </section>
 
 
-        <section id="checkoutSection" class="checkout-section">
+        <!-- ================= CHECKOUT SECTION ================= -->
+        <section id="checkoutSection" class="checkout-section hidden">
             <div class="section-container">
 
                 <div class="section-heading">
@@ -726,7 +985,6 @@
     </main>
 
 
-    <!-- ================= PRODUCT DETAILS MODAL ================= -->
     <div id="productDetailsModal" class="product-details-modal hidden">
         <div class="product-details-card">
 
@@ -843,7 +1101,19 @@
     <div id="cartNotification" class="cart-notification"></div>
 
 
-    <script src="script.js"></script>
+    <!-- ================= MOBILE CATEGORIES TAB BUTTON ================= -->
+
+    <button
+        type="button"
+        class="categories-tab-button"
+        id="categoriesTabButton"
+        aria-label="Open Categories"
+    >
+        📂
+    </button>
+
+
+    <script src="/script.js?v=8"></script>
 
 </body>
 </html>
