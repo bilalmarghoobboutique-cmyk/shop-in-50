@@ -1,9 +1,15 @@
 "use strict";
 
 /* =========================================================
-   SHOP IN 50 RUPEES
-   COMPLETE FRONTEND SCRIPT
+   SHOP IN 50 RUPEES - FRONTEND SCRIPT
    ========================================================= */
+
+// Yahan localhost aur live URL dono handle kiye gaye hain
+const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
+    ? "http://localhost:5000/api" 
+    : "https://shop-in-50-backend.onrender.com/api"; // Yahan apna Render URL dalna hoga agar host kiya ho
+
+const MEDIA_BASE_URL = API_BASE_URL.replace("/api", "");
 
 const PRICE_50_RUPEE = 50;
 const PRICE_100_RUPEE = 100;
@@ -45,8 +51,8 @@ function initializeStore() {
     togglePaymentDetails();
     scheduleSaleProgressPopup();
     
-    // Load products from localStorage (Admin saved)
-    loadProductsFromLocal();
+    // API se products load karein
+    loadProductsFromAPI();
 }
 
 function attachEventListeners() {
@@ -127,6 +133,56 @@ function attachEventListeners() {
     document.getElementById("dismissSalePopup")?.addEventListener("click", hideSaleProgressPopup);
 }
 
+/* ================= API SE PRODUCTS LOAD ================= */
+async function loadProductsFromAPI() {
+    const grid = document.getElementById("productsGrid");
+    if (!grid) return;
+
+    grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #667085;">⏳ Loading products...</div>`;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/products`);
+        if (!response.ok) throw new Error("Server error");
+        
+        const result = await response.json();
+        let products = result.products || [];
+
+        if (products.length === 0) {
+            grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #667085;"><h3>No products available</h3><p>Admin panel se products add karein.</p></div>`;
+            return;
+        }
+
+        grid.innerHTML = products.filter(p => p.active !== false).map(product => {
+            const image = product.photos?.[0] ? `${MEDIA_BASE_URL}${product.photos[0]}` : null;
+            const categoryLabel = formatCategory(product.category);
+            const emoji = product.emoji || "📦";
+
+            return `
+                <article class="product-card" data-id="${escapeAttribute(product.id)}" data-category="${escapeAttribute(product.category)}" data-name="${escapeAttribute(product.name)}" data-emoji="${escapeAttribute(emoji)}">
+                    <div class="product-image">
+                        ${image ? `<img src="${escapeAttribute(image)}" alt="${escapeAttribute(product.name)}">` : `<div class="product-placeholder">${escapeHtml(emoji)}</div>`}
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">${escapeHtml(categoryLabel)}</span>
+                        <h3>${escapeHtml(product.name)}</h3>
+                        <p class="product-description">${escapeHtml(product.description || "")}</p>
+                        <div class="product-price">Rs.100 <span>/ item</span></div>
+                        <p class="sale-note">🔥 40+ total items = Rs.50 each</p>
+                        <button type="button" class="add-to-cart-button">Add to Cart</button>
+                    </div>
+                </article>
+            `;
+        }).join("");
+
+        attachProductCardListeners();
+
+    } catch (error) {
+        console.error("Products load error:", error);
+        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #dc3545;"><h3>Products load nahi ho sake</h3><p>Backend server chal raha hai?</p></div>`;
+    }
+}
+
+/* ================= CART LOGIC ================= */
 function loadCart() {
     try {
         const saved = localStorage.getItem("rupee50_cart");
@@ -310,6 +366,7 @@ function updateSaleOfferMessage() {
     if (box) box.classList.remove("sale-unlocked");
 }
 
+/* ================= POPUPS & MODALS ================= */
 function scheduleSaleProgressPopup() {
     let popup = document.getElementById("saleProgressPopup");
     if (!popup) {
@@ -627,30 +684,41 @@ async function placeOrder(event) {
     const originalText = button?.textContent || "🔒 Place Order Securely";
     if (button) { button.disabled = true; button.textContent = "⏳ Processing Order..."; }
 
-    setTimeout(() => {
-        try {
-            const fakeOrderNum = "ORD-" + Math.floor(100000 + Math.random() * 900000);
-            lastPlacedOrder = {
-                orderNumber: fakeOrderNum,
-                customer: orderData.customer,
-                products: orderData.products.map(p => ({...p, unitPrice: totals.unitPrice, total: p.quantity * totals.unitPrice})),
-                payment: { ...orderData.payment, status: "Pending" },
-                pricing: orderData.pricing
-            };
-            showOrderConfirmation(lastPlacedOrder);
-            cart = []; saveCart(); congratsShownForThisCart = false;
-            updateCartUI(); updateSaleOfferMessage(); updateSaleProgressPopupContent();
-            hideSaleProgressPopup();
-            document.getElementById("checkoutForm")?.reset();
-            togglePaymentDetails();
-            isOrderSubmitting = false;
-            if (button) { button.disabled = false; button.textContent = originalText; }
-        } catch (error) {
-            isOrderSubmitting = false;
-            if (button) { button.disabled = false; button.textContent = originalText; }
-            showCheckoutMessage(`❌ Error processing order locally.`, "error");
-        }
-    }, 1000);
+    try {
+        const response = await fetch(`${API_BASE_URL}/orders`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(orderData)
+        });
+
+        let result = null;
+        try { result = await response.json(); } catch { result = null; }
+
+        if (!response.ok) throw new Error(result?.message || `Server error (${response.status})`);
+        if (!result || result.success !== true) throw new Error(result?.message || "Order could not be completed.");
+
+        lastPlacedOrder = result.order || {
+            orderNumber: result.orderNumber,
+            customer: orderData.customer,
+            products: orderData.products.map(p => ({...p, unitPrice: totals.unitPrice, total: p.quantity * totals.unitPrice})),
+            payment: result.payment || { ...orderData.payment, status: "Pending" },
+            pricing: result.pricing || orderData.pricing
+        };
+
+        showOrderConfirmation(lastPlacedOrder);
+        cart = []; saveCart(); congratsShownForThisCart = false;
+        updateCartUI(); updateSaleOfferMessage(); updateSaleProgressPopupContent();
+        hideSaleProgressPopup();
+        document.getElementById("checkoutForm")?.reset();
+        togglePaymentDetails();
+
+    } catch (error) {
+        console.error("Place order error:", error);
+        showCheckoutMessage(`❌ ${error.message || "Order place nahi ho saka."}`, "error");
+    } finally {
+        isOrderSubmitting = false;
+        if (button) { button.disabled = false; button.textContent = originalText; }
+    }
 }
 
 function showOrderConfirmation(order) {
@@ -746,6 +814,7 @@ async function sendWhatsAppInvoice() {
     window.open(whatsappUrl, "_blank");
 }
 
+/* ================= SEARCH & FILTER ================= */
 function searchProducts() {
     const query = document.getElementById("searchInput")?.value.trim().toLowerCase() || "";
     const cards = document.querySelectorAll(".product-card");
@@ -776,6 +845,7 @@ function filterProducts(category) {
     document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
 }
 
+/* ================= PRODUCT DETAILS ================= */
 function openProductDetails(card) {
     if (!card) return;
     currentDetailProduct = {
@@ -869,64 +939,6 @@ function clearCheckoutMessage() {
     const element = document.getElementById("checkoutMessage");
     if (!element) return;
     element.textContent = ""; element.className = "checkout-message"; element.style.display = "none";
-}
-
-// === ASAL FIX: LOAD PRODUCTS FROM LOCALSTORAGE ===
-function loadProductsFromLocal() {
-    const grid = document.getElementById("productsGrid");
-    if (!grid) return;
-
-    let products = [];
-    try {
-        const saved = localStorage.getItem("rupee50_admin_products");
-        if (saved) products = JSON.parse(saved);
-    } catch (e) {
-        products = [];
-    }
-
-    // Agar admin ne kuch add nahi kiya, tu default products dikhayen
-    if (products.length === 0) {
-        products = [
-            { id: "def-1", name: "Sample Smartphone", category: "electronics", description: "Latest 5G smartphone with 108MP camera.", emoji: "📱" },
-            { id: "def-2", name: "Wireless Headphones", category: "audio-headphones", description: "Noise cancelling bluetooth headphones.", emoji: "🎧" },
-            { id: "def-3", name: "Gaming Console", category: "gaming", description: "Next-gen gaming console with controller.", emoji: "🎮" },
-            { id: "def-4", name: "Leather Wallet", category: "bags-wallets", description: "Premium leather wallet for men.", emoji: "👜" }
-        ];
-    }
-
-    const activeProducts = products.filter(p => p.active !== false);
-
-    if (activeProducts.length === 0) {
-        grid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #667085;">
-                <div style="font-size: 50px; margin-bottom: 15px;">📦</div>
-                <h3 style="color: #101828; margin-bottom: 8px;">No products available</h3>
-                <p>Admin panel se products add karein.</p>
-            </div>
-        `;
-        return;
-    }
-
-    grid.innerHTML = activeProducts.map(product => {
-        const categoryLabel = formatCategory(product.category);
-        return `
-            <article class="product-card" data-id="${escapeAttribute(product.id)}" data-category="${escapeAttribute(product.category)}" data-name="${escapeAttribute(product.name)}" data-emoji="${escapeAttribute(product.emoji)}">
-                <div class="product-image">
-                    <div class="product-placeholder">${escapeHtml(product.emoji || "📦")}</div>
-                </div>
-                <div class="product-info">
-                    <span class="product-category">${escapeHtml(categoryLabel)}</span>
-                    <h3>${escapeHtml(product.name)}</h3>
-                    <p class="product-description">${escapeHtml(product.description || "")}</p>
-                    <div class="product-price">Rs.100 <span>/ item</span></div>
-                    <p class="sale-note">🔥 40+ total items = Rs.50 each</p>
-                    <button type="button" class="add-to-cart-button">Add to Cart</button>
-                </div>
-            </article>
-        `;
-    }).join("");
-
-    attachProductCardListeners();
 }
 
 function attachProductCardListeners() {

@@ -1,14 +1,12 @@
 "use strict";
 
 /* =========================================================
-   SHOP IN 50 RUPEES
-   ADMIN DASHBOARD (CONNECTED TO BACKEND)
+   SHOP IN 50 RUPEES - ADMIN DASHBOARD
    ========================================================= */
 
-// Yahan Render ka URL aayega (Abhi localhost hai)
-const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" 
+const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
     ? "http://localhost:5000/api" 
-    : "https://YOUR-RENDER-URL.onrender.com/api"; 
+    : "https://shop-in-50-backend.onrender.com/api"; 
 
 const TOKEN_KEY = "rupee50_admin_token";
 let adminToken = localStorage.getItem(TOKEN_KEY) || "";
@@ -110,12 +108,14 @@ async function loadDashboard() {
 }
 
 async function loadStats() {
-    const result = await apiRequest("/admin/stats");
-    const stats = result.stats || {};
-    setText("totalOrders", stats.totalOrders || 0);
-    setText("pendingOrders", stats.pending || 0);
-    setText("totalSales", `Rs.${Number(stats.revenue || 0)}`);
-    setText("totalProducts", stats.products || 0);
+    try {
+        const result = await apiRequest("/admin/stats");
+        const stats = result.stats || {};
+        setText("totalOrders", stats.totalOrders || 0);
+        setText("pendingOrders", stats.pending || 0);
+        setText("totalSales", `Rs.${Number(stats.revenue || 0)}`);
+        setText("totalProducts", stats.products || 0);
+    } catch (error) { console.warn("Stats load failed:", error); }
 }
 
 async function loadOrders() {
