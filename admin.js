@@ -9,7 +9,7 @@ let adminToken = localStorage.getItem(TOKEN_KEY) || "";
 let productsCache = [];
 
 // Cloudinary Settings (Aapke screenshot ke mutabiq)
-const CLOUDINARY_CLOUD_NAME = "c95dd1dc2b78b5e486c969b1f5d4d52"; // Apna Cloud Name yahan check karein
+const CLOUDINARY_CLOUD_NAME = "mo7txjdn"; // Apna Cloud Name yahan check karein
 const CLOUDINARY_UPLOAD_PRESET = "sale-50";
 
 document.addEventListener("DOMContentLoaded", () => {
