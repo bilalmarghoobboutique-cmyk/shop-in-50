@@ -139,7 +139,6 @@ function loadProductsFromLocalStorage() {
         products = [];
     }
 
-    // Agar admin ne koi product add nahi kiya, tu default dikhayen
     if (products.length === 0) {
         products = [
             { id: "def-1", name: "Sample Smartphone", category: "electronics", description: "Latest 5G smartphone.", emoji: "📱", photos: [] },
@@ -157,7 +156,6 @@ function loadProductsFromLocalStorage() {
     grid.innerHTML = activeProducts.map(product => {
         const categoryLabel = formatCategory(product.category);
         
-        // Image ka link check karein
         const imageUrl = (product.photos && product.photos.length > 0) ? product.photos[0] : null;
         const emojiToShow = product.emoji && product.emoji.length < 5 ? product.emoji : "📦";
 
@@ -205,7 +203,7 @@ function attachProductCardListeners() {
     });
 }
 
-/* ================= CART LOGIC (Waisa hi rahega) ================= */
+/* ================= CART LOGIC ================= */
 function loadCart() {
     try {
         const saved = localStorage.getItem("rupee50_cart");
