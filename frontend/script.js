@@ -31,19 +31,12 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function initializeStore() {
-    console.log("Initializing Shop in 50 Rupees...");
     normalizeCart();
     forceHideSection("cartSection");
     forceHideSection("checkoutSection");
     forceHideSection("confirmationSection");
     forceHideSection("productDetailsModal");
     document.body.classList.remove("modal-open");
-
-    const cartSection = document.getElementById("cartSection");
-    if (cartSection) {
-        cartSection.classList.add("hidden");
-        cartSection.style.setProperty("display", "none", "important");
-    }
 
     updateCartUI();
     attachEventListeners();
@@ -52,7 +45,7 @@ function initializeStore() {
     togglePaymentDetails();
     scheduleSaleProgressPopup();
     
-    // Load products from admin (LocalStorage) instead of API
+    // Load products from localStorage (Admin saved)
     loadProductsFromLocal();
 }
 
@@ -878,12 +871,11 @@ function clearCheckoutMessage() {
     element.textContent = ""; element.className = "checkout-message"; element.style.display = "none";
 }
 
-// === YEH HAI ASAL FIX ===
+// === ASAL FIX: LOAD PRODUCTS FROM LOCALSTORAGE ===
 function loadProductsFromLocal() {
     const grid = document.getElementById("productsGrid");
     if (!grid) return;
 
-    // Browser memory se products uthayen
     let products = [];
     try {
         const saved = localStorage.getItem("rupee50_admin_products");
@@ -892,7 +884,7 @@ function loadProductsFromLocal() {
         products = [];
     }
 
-    // Agar admin ne kuch add nahi kiya, tu yeh default products dikhayen
+    // Agar admin ne kuch add nahi kiya, tu default products dikhayen
     if (products.length === 0) {
         products = [
             { id: "def-1", name: "Sample Smartphone", category: "electronics", description: "Latest 5G smartphone with 108MP camera.", emoji: "📱" },
@@ -902,7 +894,6 @@ function loadProductsFromLocal() {
         ];
     }
 
-    // Sirf woh products dikhayen jo Active hain
     const activeProducts = products.filter(p => p.active !== false);
 
     if (activeProducts.length === 0) {
