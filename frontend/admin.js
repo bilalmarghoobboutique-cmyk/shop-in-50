@@ -9,7 +9,7 @@ let adminToken = localStorage.getItem(TOKEN_KEY) || "";
 let productsCache = [];
 
 // Cloudinary Settings
-const CLOUDINARY_CLOUD_NAME = "c95dd1dc2b78b5e486c969b1f5d4d52";
+const CLOUDINARY_CLOUD_NAME = "95dd1dc2b78b5e486c969b1f5d4d52";
 const CLOUDINARY_UPLOAD_PRESET = "sale-50";
 
 document.addEventListener("DOMContentLoaded", () => {
