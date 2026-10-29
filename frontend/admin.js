@@ -1,15 +1,15 @@
 "use strict";
 
 /* =========================================================
-   SHOP IN 50 RUPEES - ADMIN DASHBOARD (CLOUDINARY FIX)
+   SHOP IN 50 RUPEES - ADMIN DASHBOARD (FIXED)
    ========================================================= */
 
 const TOKEN_KEY = "rupee50_admin_token";
 let adminToken = localStorage.getItem(TOKEN_KEY) || "";
 let productsCache = [];
 
-// Cloudinary Settings (Aapke screenshot ke mutabiq)
-const CLOUDINARY_CLOUD_NAME = "c95dd1dc2b78b5e486c969b1f5d4d52"; // Apna Cloud Name yahan check karein
+// Cloudinary Settings
+const CLOUDINARY_CLOUD_NAME = "c95dd1dc2b78b5e486c969b1f5d4d52";
 const CLOUDINARY_UPLOAD_PRESET = "sale-50";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -38,7 +38,6 @@ function attachAdminListeners() {
 }
 
 /* ================= LOGIN ================= */
-
 async function loginAdmin(event) {
     event.preventDefault();
     const username = document.getElementById("adminUsername")?.value.trim();
@@ -53,7 +52,7 @@ async function loginAdmin(event) {
             showDashboard();
             renderProducts(); 
         } else {
-            showMessage("loginMessage", "❌ Ghalat Username ya Password! (Username: admin, Password: Sidrabilal1#)", "error");
+            showMessage("loginMessage", "❌ Ghalat Username ya Password!", "error");
         }
     }, 500);
 }
@@ -75,7 +74,6 @@ function showDashboard() {
 }
 
 /* ================= PRODUCTS ================= */
-
 function loadLocalProducts() {
     try {
         const saved = localStorage.getItem("rupee50_admin_products");
@@ -97,7 +95,7 @@ async function saveProduct(event) {
     const name = document.getElementById("productName").value.trim();
     const category = document.getElementById("productCategory").value;
     const stock = document.getElementById("productStock").value;
-    const emoji = document.getElementById("productEmoji").value.trim() || "📦";
+    const emojiInput = document.getElementById("productEmoji");
     const description = document.getElementById("productDetails").value.trim();
     const active = document.getElementById("productActive").checked;
 
@@ -111,7 +109,7 @@ async function saveProduct(event) {
     const photoInput = document.getElementById("productPhotos");
     
     if (photoInput && photoInput.files.length > 0) {
-        showMessage("productFormMessage", "⏳ Image upload ho rahi hai...", "info");
+        showMessage("productFormMessage", "⏳ Image upload ho rahi hai (please wait)...", "info");
         const file = photoInput.files[0];
         const formData = new FormData();
         formData.append("file", file);
@@ -123,23 +121,28 @@ async function saveProduct(event) {
                 body: formData
             });
             const data = await response.json();
+            
             if (data.secure_url) {
                 imageUrl = data.secure_url;
+                // === AUTO-FILL EMOJI BOX WITH IMAGE URL ===
+                emojiInput.value = imageUrl; 
             } else {
-                throw new Error("Image upload failed. Check Cloudinary preset.");
+                throw new Error(data.error?.message || "Cloudinary ne error diya. Preset 'Unsigned' hai?");
             }
         } catch (error) {
-            showMessage("productFormMessage", `❌ ${error.message}`, "error");
+            showMessage("productFormMessage", `❌ Image Upload Failed: ${error.message}`, "error");
             return;
         }
     }
 
+    // Agar image upload nahi hui tu purana emoji use karo
+    const finalEmoji = imageUrl || emojiInput.value.trim() || "📦";
+
     if (editingId) {
         const index = productsCache.findIndex(p => String(p.id) === String(editingId));
         if (index !== -1) {
-            // Agar nayi image aayi hai tu update karo, warna purani rakho
             const newPhotos = imageUrl ? [imageUrl] : (productsCache[index].photos || []);
-            productsCache[index] = { ...productsCache[index], name, category, stock: Number(stock) || 0, emoji, description, active, photos: newPhotos };
+            productsCache[index] = { ...productsCache[index], name, category, stock: Number(stock) || 0, emoji: finalEmoji, description, active, photos: newPhotos };
             showMessage("productFormMessage", "✓ Product update ho gaya!", "success");
         }
     } else {
@@ -148,10 +151,10 @@ async function saveProduct(event) {
             name,
             category,
             stock: Number(stock) || 0,
-            emoji,
+            emoji: finalEmoji,
             description,
             active,
-            photos: imageUrl ? [imageUrl] : [] // Cloudinary ka link save ho raha hai
+            photos: imageUrl ? [imageUrl] : []
         };
         productsCache.push(newProduct);
         showMessage("productFormMessage", "✓ Naya product save ho gaya!", "success");
@@ -176,7 +179,6 @@ function renderProducts() {
     empty?.classList.add("hidden");
 
     grid.innerHTML = productsCache.map(product => {
-        // Check if image exists from Cloudinary
         const image = product.photos && product.photos.length > 0 ? product.photos[0] : "";
         
         return `
@@ -246,7 +248,6 @@ function deleteProduct(id) {
 }
 
 /* ================= HELPERS ================= */
-
 function showMessage(id, message, type = "info") {
     const element = document.getElementById(id);
     if (!element) return;
