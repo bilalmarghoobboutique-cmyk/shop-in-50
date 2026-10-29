@@ -1,8 +1,12 @@
 "use strict";
 
 /* =========================================================
-   SHOP IN 50 RUPEES - FRONTEND SCRIPT
+   SHOP IN 50 RUPEES - FRONTEND SCRIPT (SUPABASE CONNECTED)
    ========================================================= */
+
+// Supabase Configuration
+const SUPABASE_URL = "https://avcktyxixujsiqlygfuw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_bw7yXcQKAaYVtXWrGRlnzA_Q1PdiXer";
 
 const PRICE_50_RUPEE = 50;
 const PRICE_100_RUPEE = 100;
@@ -44,18 +48,11 @@ function initializeStore() {
     togglePaymentDetails();
     scheduleSaleProgressPopup();
     
-    // Admin panel wali memory se products load karein
-    loadProductsFromLocalStorage();
+    // Supabase se products load karein
+    loadProductsFromSupabase();
 }
 
 function attachEventListeners() {
-    document.querySelectorAll(".category-card").forEach(function (card) {
-        card.addEventListener("click", function () {
-            const category = this.dataset.category;
-            if (category) filterProducts(category);
-        });
-    });
-
     document.getElementById("searchInput")?.addEventListener("input", searchProducts);
     document.getElementById("searchButton")?.addEventListener("click", searchProducts);
 
@@ -126,59 +123,60 @@ function attachEventListeners() {
     document.getElementById("dismissSalePopup")?.addEventListener("click", hideSaleProgressPopup);
 }
 
-// ==== ASAL FIX: ADMIN PANEL SE PRODUCTS LOAD KARNA ====
-function loadProductsFromLocalStorage() {
+/* ================= SUPABASE PRODUCTS LOAD ================= */
+async function loadProductsFromSupabase() {
     const grid = document.getElementById("productsGrid");
     if (!grid) return;
 
-    let products = [];
+    grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #667085;">⏳ Loading products...</div>`;
+
     try {
-        const saved = localStorage.getItem("rupee50_admin_products");
-        if (saved) products = JSON.parse(saved);
-    } catch (e) {
-        products = [];
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*&active=eq.true&order=created_at.desc`, {
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`
+            }
+        });
+
+        if (!response.ok) throw new Error("Server error");
+
+        const products = await response.json();
+
+        if (products.length === 0) {
+            grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #667085;"><h3>No products available</h3><p>Admin panel se products add karein.</p></div>`;
+            return;
+        }
+
+        grid.innerHTML = products.map(product => {
+            const categoryLabel = formatCategory(product.category);
+            const imageUrl = product.image_url || null;
+            const emojiToShow = product.emoji && product.emoji.length < 5 ? product.emoji : "📦";
+
+            return `
+                <article class="product-card" data-id="${escapeAttribute(product.id)}" data-category="${escapeAttribute(product.category)}" data-name="${escapeAttribute(product.name)}" data-emoji="${escapeAttribute(emojiToShow)}">
+                    <div class="product-image">
+                        ${imageUrl 
+                            ? `<img src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(product.name)}" style="width:100%; height:100%; object-fit:contain;">` 
+                            : `<div class="product-placeholder">${escapeHtml(emojiToShow)}</div>`}
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">${escapeHtml(categoryLabel)}</span>
+                        <h3>${escapeHtml(product.name)}</h3>
+                        <p class="product-description">${escapeHtml(product.description || "")}</p>
+                        <div class="product-price">Rs.100 <span>/ item</span></div>
+                        <p class="sale-note">🔥 40+ total items = Rs.50 each</p>
+                        <button type="button" class="add-to-cart-button">Add to Cart</button>
+                    </div>
+                </article>
+            `;
+        }).join("");
+
+        attachProductCardListeners();
+
+    } catch (error) {
+        console.error("Products load error:", error);
+        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #dc3545;"><h3>Products load nahi ho sake</h3><p>Internet connection check karein.</p></div>`;
     }
-
-    if (products.length === 0) {
-        products = [
-            { id: "def-1", name: "Sample Smartphone", category: "electronics", description: "Latest 5G smartphone.", emoji: "📱", photos: [] },
-            { id: "def-2", name: "Wireless Headphones", category: "audio-headphones", description: "Noise cancelling headphones.", emoji: "🎧", photos: [] }
-        ];
-    }
-
-    const activeProducts = products.filter(p => p.active !== false);
-
-    if (activeProducts.length === 0) {
-        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;"><h3>No products available</h3></div>`;
-        return;
-    }
-
-    grid.innerHTML = activeProducts.map(product => {
-        const categoryLabel = formatCategory(product.category);
-        
-        const imageUrl = (product.photos && product.photos.length > 0) ? product.photos[0] : null;
-        const emojiToShow = product.emoji && product.emoji.length < 5 ? product.emoji : "📦";
-
-        return `
-            <article class="product-card" data-id="${escapeAttribute(product.id)}" data-category="${escapeAttribute(product.category)}" data-name="${escapeAttribute(product.name)}" data-emoji="${escapeAttribute(emojiToShow)}">
-                <div class="product-image">
-                    ${imageUrl 
-                        ? `<img src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(product.name)}" style="width:100%; height:100%; object-fit:contain;">` 
-                        : `<div class="product-placeholder">${escapeHtml(emojiToShow)}</div>`}
-                </div>
-                <div class="product-info">
-                    <span class="product-category">${escapeHtml(categoryLabel)}</span>
-                    <h3>${escapeHtml(product.name)}</h3>
-                    <p class="product-description">${escapeHtml(product.description || "")}</p>
-                    <div class="product-price">Rs.100 <span>/ item</span></div>
-                    <p class="sale-note">🔥 40+ total items = Rs.50 each</p>
-                    <button type="button" class="add-to-cart-button">Add to Cart</button>
-                </div>
-            </article>
-        `;
-    }).join("");
-
-    attachProductCardListeners();
 }
 
 function attachProductCardListeners() {
