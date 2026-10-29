@@ -1,25 +1,28 @@
 "use strict";
 
 /* =========================================================
-   SHOP IN 50 RUPEES - ADMIN DASHBOARD
+   SHOP IN 50 RUPEES - ADMIN DASHBOARD (SUPABASE + CLOUDINARY)
    ========================================================= */
+
+// Supabase Configuration
+const SUPABASE_URL = "https://avcktyxixujsiqlygfuw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_bw7yXcQKAaYVtXWrGRlnzA_Q1PdiXer";
+
+// Cloudinary Configuration
+const CLOUDINARY_CLOUD_NAME = "mo7txjdn";
+const CLOUDINARY_UPLOAD_PRESET = "sale-50";
 
 const TOKEN_KEY = "rupee50_admin_token";
 let adminToken = localStorage.getItem(TOKEN_KEY) || "";
 let productsCache = [];
 
-// Cloudinary Settings
-const CLOUDINARY_CLOUD_NAME = "mo7txjdn";
-const CLOUDINARY_UPLOAD_PRESET = "sale-50";
-
 document.addEventListener("DOMContentLoaded", () => {
-    loadLocalProducts(); 
     attachAdminListeners();
 
     if (adminToken) {
         showDashboard();
-        renderProducts();
-        calculateStatistics(); // Statistics on load
+        loadProducts();
+        loadStatistics();
     } else {
         showLogin();
     }
@@ -30,12 +33,13 @@ function attachAdminListeners() {
     document.getElementById("logoutButton")?.addEventListener("click", logoutAdmin);
     document.getElementById("productForm")?.addEventListener("submit", saveProduct);
     document.getElementById("cancelProductEdit")?.addEventListener("click", resetProductForm);
+    
     document.getElementById("refreshProductsButton")?.addEventListener("click", () => {
-        renderProducts();
-        calculateStatistics();
+        loadProducts();
+        loadStatistics();
     });
     
-    document.getElementById("refreshStatsButton")?.addEventListener("click", calculateStatistics);
+    document.getElementById("refreshStatsButton")?.addEventListener("click", loadStatistics);
 
     document.querySelector("[data-close]")?.addEventListener("click", closeOrderModal);
     document.getElementById("orderDetailsModal")?.addEventListener("click", event => {
@@ -56,15 +60,15 @@ async function loginAdmin(event) {
             adminToken = "local_admin_token_" + Date.now();
             localStorage.setItem(TOKEN_KEY, adminToken);
             showDashboard();
-            renderProducts(); 
-            calculateStatistics();
+            loadProducts(); 
+            loadStatistics();
         } else {
             showMessage("loginMessage", "❌ Ghalat Username ya Password!", "error");
         }
     }, 500);
 }
 
-async function logoutAdmin() {
+function logoutAdmin() {
     adminToken = "";
     localStorage.removeItem(TOKEN_KEY);
     showLogin();
@@ -80,31 +84,35 @@ function showDashboard() {
     document.getElementById("dashboardSection")?.classList.remove("hidden");
 }
 
-/* ================= PRODUCTS ================= */
-function loadLocalProducts() {
-    try {
-        const saved = localStorage.getItem("rupee50_admin_products");
-        if (saved) productsCache = JSON.parse(saved);
-        else productsCache = []; 
-    } catch (e) {
-        productsCache = [];
-    }
-}
+/* ================= SUPABASE API ================= */
+async function loadProducts() {
+    const grid = document.getElementById("adminProductsGrid");
+    if (grid) grid.innerHTML = "<p>⏳ Products loading...</p>";
 
-function saveLocalProducts() {
-    localStorage.setItem("rupee50_admin_products", JSON.stringify(productsCache));
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*&order=created_at.desc`, {
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`
+            }
+        });
+        if (!res.ok) throw new Error("Supabase connection failed.");
+        productsCache = await res.json();
+        renderProducts();
+    } catch (error) {
+        if (grid) grid.innerHTML = `<p style="color:red;">❌ Error: ${error.message}</p>`;
+    }
 }
 
 async function saveProduct(event) {
     event.preventDefault();
 
-    const editingId = document.getElementById("editingProductId").value.trim();
     const name = document.getElementById("productName").value.trim();
     const category = document.getElementById("productCategory").value;
     const stock = document.getElementById("productStock").value;
-    const emojiInput = document.getElementById("productEmoji");
     const description = document.getElementById("productDetails").value.trim();
     const active = document.getElementById("productActive").checked;
+    const photoInput = document.getElementById("productPhotos");
 
     if (!name || !category || !description) {
         showMessage("productFormMessage", "❌ Name, Category aur Details zaroori hain.", "error");
@@ -112,180 +120,129 @@ async function saveProduct(event) {
     }
 
     let imageUrl = "";
-    const photoInput = document.getElementById("productPhotos");
-    
+
+    // Upload to Cloudinary
     if (photoInput && photoInput.files.length > 0) {
         showMessage("productFormMessage", "⏳ Image upload ho rahi hai...", "info");
-        const file = photoInput.files[0];
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("file", photoInput.files[0]);
         formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
         try {
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                method: "POST",
-                body: formData
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                method: "POST", body: formData
             });
-            const data = await response.json();
-            
-            if (data.secure_url) {
-                imageUrl = data.secure_url;
-                emojiInput.value = imageUrl; 
-            } else {
-                throw new Error(data.error?.message || "Cloudinary error.");
-            }
-        } catch (error) {
-            showMessage("productFormMessage", `❌ Image Upload Failed: ${error.message}`, "error");
+            const data = await res.json();
+            if (data.secure_url) imageUrl = data.secure_url;
+            else throw new Error("Cloudinary ne error diya.");
+        } catch (err) {
+            showMessage("productFormMessage", `❌ Image Upload Failed: ${err.message}`, "error");
             return;
         }
     }
 
-    const finalEmoji = imageUrl || emojiInput.value.trim() || "📦";
+    showMessage("productFormMessage", "⏳ Database mein save ho raha hai...", "info");
 
-    if (editingId) {
-        const index = productsCache.findIndex(p => String(p.id) === String(editingId));
-        if (index !== -1) {
-            const newPhotos = imageUrl ? [imageUrl] : (productsCache[index].photos || []);
-            productsCache[index] = { ...productsCache[index], name, category, stock: Number(stock) || 0, emoji: finalEmoji, description, active, photos: newPhotos };
-            showMessage("productFormMessage", "✓ Product update ho gaya!", "success");
-        }
-    } else {
-        const newProduct = {
-            id: "prod-" + Date.now(),
-            name,
-            category,
-            stock: Number(stock) || 0,
-            emoji: finalEmoji,
-            description,
-            active,
-            photos: imageUrl ? [imageUrl] : []
-        };
-        productsCache.push(newProduct);
-        showMessage("productFormMessage", "✓ Naya product save ho gaya!", "success");
+    const productData = {
+        name: name,
+        category: category,
+        description: description,
+        stock: parseInt(stock) || 0,
+        active: active,
+        image_url: imageUrl,
+        emoji: imageUrl ? "" : "📦"
+    };
+
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/products`, {
+            method: "POST",
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`,
+                "Content-Type": "application/json",
+                "Prefer": "return=minimal"
+            },
+            body: JSON.stringify(productData)
+        });
+
+        if (!res.ok) throw new Error("Database save error.");
+
+        showMessage("productFormMessage", "✓ Product save ho gaya!", "success");
+        resetProductForm();
+        loadProducts();
+        loadStatistics();
+    } catch (err) {
+        showMessage("productFormMessage", `❌ ${err.message}`, "error");
     }
-
-    saveLocalProducts();
-    renderProducts();
-    calculateStatistics();
-    resetProductForm();
 }
 
 function renderProducts() {
     const grid = document.getElementById("adminProductsGrid");
-    const empty = document.getElementById("productsEmpty");
     if (!grid) return;
 
     if (productsCache.length === 0) {
-        grid.innerHTML = "";
-        empty?.classList.remove("hidden");
+        grid.innerHTML = "<p>Koi product nahi hai. Naya add karein.</p>";
         return;
     }
 
-    empty?.classList.add("hidden");
-
-    grid.innerHTML = productsCache.map(product => {
-        const image = product.photos && product.photos.length > 0 ? product.photos[0] : "";
-        
-        return `
-            <article class="admin-product-card">
-                <div class="admin-product-image">
-                    ${image ? `<img src="${escapeAttribute(image)}" alt="${escapeAttribute(product.name)}">` : `<span>${escapeHtml(product.emoji || "📦")}</span>`}
+    grid.innerHTML = productsCache.map(product => `
+        <article class="admin-product-card">
+            <div class="admin-product-image">
+                ${product.image_url ? `<img src="${product.image_url}" alt="img">` : `<span>📦</span>`}
+            </div>
+            <div class="admin-product-info">
+                <span>${product.category}</span>
+                <h3>${product.name}</h3>
+                <strong>Rs.100 <small>/ item</small></strong>
+                <small class="stock-label">Stock: ${product.stock}</small>
+                <small>${product.active ? "Active" : "Inactive"}</small>
+                <div class="admin-product-actions">
+                    <button type="button" class="danger" onclick="deleteProduct('${product.id}')">Delete</button>
                 </div>
-                <div class="admin-product-info">
-                    <span>${escapeHtml(product.category || "General")}</span>
-                    <h3>${escapeHtml(product.name)}</h3>
-                    <strong>Rs.100 <small>/ item</small></strong>
-                    <small class="stock-label">Stock: ${product.stock || 0}</small>
-                    <small>${product.active !== false ? "Active" : "Inactive"}</small>
-                    <div class="admin-product-actions">
-                        <button type="button" data-edit-product="${escapeAttribute(product.id)}">Edit</button>
-                        <button type="button" class="danger" data-delete-product="${escapeAttribute(product.id)}">Delete</button>
-                    </div>
-                </div>
-            </article>
-        `;
-    }).join("");
-
-    grid.querySelectorAll("[data-edit-product]").forEach(button => {
-        button.addEventListener("click", () => editProduct(button.dataset.editProduct));
-    });
-
-    grid.querySelectorAll("[data-delete-product]").forEach(button => {
-        button.addEventListener("click", () => deleteProduct(button.dataset.deleteProduct));
-    });
+            </div>
+        </article>
+    `).join("");
 }
 
-function editProduct(id) {
-    const product = productsCache.find(item => String(item.id) === String(id));
-    if (!product) return;
-
-    document.getElementById("editingProductId").value = product.id;
-    document.getElementById("productName").value = product.name || "";
-    document.getElementById("productCategory").value = product.category || "";
-    document.getElementById("productStock").value = product.stock ?? 0;
-    document.getElementById("productEmoji").value = product.emoji || "📦";
-    document.getElementById("productDetails").value = product.description || "";
-    document.getElementById("productActive").checked = product.active !== false;
-
-    document.getElementById("editProductOptions")?.classList.remove("hidden");
-    document.getElementById("cancelProductEdit")?.classList.remove("hidden");
-    document.getElementById("productForm")?.scrollIntoView({ behavior: "smooth" });
+async function deleteProduct(id) {
+    if (!confirm("Kya aap waqai delete karna chahte hain?")) return;
+    try {
+        await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}`, {
+            method: "DELETE",
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`
+            }
+        });
+        loadProducts();
+        loadStatistics();
+    } catch (err) {
+        alert("Delete error: " + err.message);
+    }
 }
 
 function resetProductForm() {
     document.getElementById("productForm")?.reset();
-    document.getElementById("editingProductId").value = "";
-    document.getElementById("productStock").value = 0;
     document.getElementById("productActive").checked = true;
-    document.getElementById("editProductOptions")?.classList.add("hidden");
-    document.getElementById("cancelProductEdit")?.classList.add("hidden");
 }
 
-function deleteProduct(id) {
-    const product = productsCache.find(item => String(item.id) === String(id));
-    if (!product) return;
-
-    if (confirm(`Kya aap waqai "${product.name}" delete karna chahte hain?`)) {
-        productsCache = productsCache.filter(item => String(item.id) !== String(id));
-        saveLocalProducts();
-        renderProducts();
-        calculateStatistics();
-    }
-}
-
-/* ================= STATISTICS (LOCAL CALCULATION) ================= */
-function calculateStatistics() {
-    let totalProducts = productsCache.length;
-    let totalStock = 0;
-    let totalStockValue = 0;
-    let outOfStock = 0;
-    let lowStock = 0;
-    let inStock = 0;
+/* ================= STATISTICS ================= */
+function loadStatistics() {
+    let inStock = 0, lowStock = 0, outOfStock = 0, totalStockValue = 0;
 
     productsCache.forEach(p => {
         const stock = Number(p.stock) || 0;
-        const price = 100; // Fixed price
-        totalStock += stock;
-        totalStockValue += (stock * price);
-
+        totalStockValue += (stock * 100);
         if (stock === 0) outOfStock++;
         else if (stock <= 5) lowStock++;
         else inStock++;
     });
 
-    // Update UI Cards
+    // Basic Stats
+    setText("totalProducts", productsCache.length);
     setText("totalOrders", 0);
     setText("pendingOrders", 0);
     setText("totalSales", "Rs.0");
-    setText("totalProducts", totalProducts);
-
-    // Statistics Dashboard Tabs
-    setText("statsOrders", 0);
-    setText("statsProductsSold", 0);
-    setText("statsRevenue", "Rs.0");
-    setText("statsProductRevenue", "Rs.0");
-    setText("statsDeliveryRevenue", "Rs.0");
-    setText("statsAvgOrder", "Rs.0");
 
     // Stock Status
     setText("stockInStock", inStock);
@@ -293,59 +250,41 @@ function calculateStatistics() {
     setText("stockOutOfStock", outOfStock);
     setText("stockTotalValue", `Rs.${totalStockValue}`);
 
-    // Render Stock Table
+    // Stock Table
     const tbody = document.getElementById("stockListBody");
     if (tbody) {
-        if (productsCache.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#667085;">No products</td></tr>`;
-        } else {
-            tbody.innerHTML = productsCache.map(p => {
+        tbody.innerHTML = productsCache.length === 0 
+            ? `<tr><td colspan="7" style="text-align:center;">No products</td></tr>` 
+            : productsCache.map(p => {
                 const stock = Number(p.stock) || 0;
-                let statusLabel = "In Stock";
-                let statusClass = "in-stock";
-                
-                if (stock === 0) { statusLabel = "Out of Stock"; statusClass = "out-of-stock"; }
-                else if (stock <= 5) { statusLabel = "Low Stock"; statusClass = "low-stock"; }
+                let status = "In Stock", cls = "in-stock";
+                if (stock === 0) { status = "Out of Stock"; cls = "out-of-stock"; }
+                else if (stock <= 5) { status = "Low Stock"; cls = "low-stock"; }
 
-                return `
-                    <tr>
-                        <td><strong>${escapeHtml(p.name)}</strong></td>
-                        <td>${escapeHtml(p.category || "general")}</td>
-                        <td>${stock}</td>
-                        <td>0</td>
-                        <td>Rs.100</td>
-                        <td>Rs.${stock * 100}</td>
-                        <td>
-                            <span class="status-pill ${statusClass}">
-                                ${statusLabel}
-                            </span>
-                        </td>
-                    </tr>
-                `;
+                return `<tr>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.category}</td>
+                    <td>${stock}</td>
+                    <td>0</td>
+                    <td>Rs.100</td>
+                    <td>Rs.${stock * 100}</td>
+                    <td><span class="status-pill ${cls}">${status}</span></td>
+                </tr>`;
             }).join("");
-        }
     }
 }
 
 /* ================= HELPERS ================= */
 function showMessage(id, message, type = "info") {
-    const element = document.getElementById(id);
-    if (!element) return;
-    element.textContent = message;
-    element.className = `admin-message ${type}`;
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = message;
+    el.className = `admin-message ${type}`;
 }
 
 function setText(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value;
-}
-
-function escapeHtml(value) {
-    return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
-
-function escapeAttribute(value) {
-    return escapeHtml(value);
 }
 
 function closeOrderModal() {
