@@ -44,8 +44,8 @@ function initializeStore() {
     togglePaymentDetails();
     scheduleSaleProgressPopup();
     
-    // Load products from localStorage (Admin saved)
-    loadProductsFromLocal();
+    // Admin panel wali memory se products load karein
+    loadProductsFromLocalStorage();
 }
 
 function attachEventListeners() {
@@ -126,12 +126,91 @@ function attachEventListeners() {
     document.getElementById("dismissSalePopup")?.addEventListener("click", hideSaleProgressPopup);
 }
 
+// ==== ASAL FIX: ADMIN PANEL SE PRODUCTS LOAD KARNA ====
+function loadProductsFromLocalStorage() {
+    const grid = document.getElementById("productsGrid");
+    if (!grid) return;
+
+    let products = [];
+    try {
+        const saved = localStorage.getItem("rupee50_admin_products");
+        if (saved) products = JSON.parse(saved);
+    } catch (e) {
+        products = [];
+    }
+
+    // Agar admin ne koi product add nahi kiya, tu default dikhayen
+    if (products.length === 0) {
+        products = [
+            { id: "def-1", name: "Sample Smartphone", category: "electronics", description: "Latest 5G smartphone.", emoji: "📱", photos: [] },
+            { id: "def-2", name: "Wireless Headphones", category: "audio-headphones", description: "Noise cancelling headphones.", emoji: "🎧", photos: [] }
+        ];
+    }
+
+    const activeProducts = products.filter(p => p.active !== false);
+
+    if (activeProducts.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;"><h3>No products available</h3></div>`;
+        return;
+    }
+
+    grid.innerHTML = activeProducts.map(product => {
+        const categoryLabel = formatCategory(product.category);
+        
+        // Image ka link check karein
+        const imageUrl = (product.photos && product.photos.length > 0) ? product.photos[0] : null;
+        const emojiToShow = product.emoji && product.emoji.length < 5 ? product.emoji : "📦";
+
+        return `
+            <article class="product-card" data-id="${escapeAttribute(product.id)}" data-category="${escapeAttribute(product.category)}" data-name="${escapeAttribute(product.name)}" data-emoji="${escapeAttribute(emojiToShow)}">
+                <div class="product-image">
+                    ${imageUrl 
+                        ? `<img src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(product.name)}" style="width:100%; height:100%; object-fit:contain;">` 
+                        : `<div class="product-placeholder">${escapeHtml(emojiToShow)}</div>`}
+                </div>
+                <div class="product-info">
+                    <span class="product-category">${escapeHtml(categoryLabel)}</span>
+                    <h3>${escapeHtml(product.name)}</h3>
+                    <p class="product-description">${escapeHtml(product.description || "")}</p>
+                    <div class="product-price">Rs.100 <span>/ item</span></div>
+                    <p class="sale-note">🔥 40+ total items = Rs.50 each</p>
+                    <button type="button" class="add-to-cart-button">Add to Cart</button>
+                </div>
+            </article>
+        `;
+    }).join("");
+
+    attachProductCardListeners();
+}
+
+function attachProductCardListeners() {
+    document.querySelectorAll(".add-to-cart-button").forEach(button => {
+        if (button.dataset.listenerAttached === "true") return;
+        button.dataset.listenerAttached = "true";
+        button.addEventListener("click", function (e) {
+            e.preventDefault(); e.stopPropagation();
+            const card = button.closest(".product-card");
+            if (!card) return;
+            addToCart(card.dataset.name || "Product", 100, card.dataset.category || "general", card.dataset.emoji || "📦", card.dataset.id || "");
+        });
+    });
+
+    document.querySelectorAll(".product-card").forEach(card => {
+        if (card.dataset.detailsListenerAttached === "true") return;
+        card.dataset.detailsListenerAttached = "true";
+        card.addEventListener("click", function (e) {
+            if (e.target.closest(".add-to-cart-button")) return;
+            openProductDetails(card);
+        });
+    });
+}
+
+/* ================= CART LOGIC (Waisa hi rahega) ================= */
 function loadCart() {
     try {
         const saved = localStorage.getItem("rupee50_cart");
         if (!saved) return [];
-        const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed : [];
+        return JSON.parse(saved) || [];
     } catch (error) { return []; }
 }
 
@@ -868,81 +947,6 @@ function clearCheckoutMessage() {
     const element = document.getElementById("checkoutMessage");
     if (!element) return;
     element.textContent = ""; element.className = "checkout-message"; element.style.display = "none";
-}
-
-// === ASAL FIX: LOAD PRODUCTS FROM LOCALSTORAGE & SHOW IMAGES ===
-function loadProductsFromLocal() {
-    const grid = document.getElementById("productsGrid");
-    if (!grid) return;
-
-    let products = [];
-    try {
-        const saved = localStorage.getItem("rupee50_admin_products");
-        if (saved) products = JSON.parse(saved);
-    } catch (e) {
-        products = [];
-    }
-
-    if (products.length === 0) {
-        products = [
-            { id: "def-1", name: "Sample Smartphone", category: "electronics", description: "Latest 5G smartphone with 108MP camera.", emoji: "📱" },
-            { id: "def-2", name: "Wireless Headphones", category: "audio-headphones", description: "Noise cancelling bluetooth headphones.", emoji: "🎧" },
-            { id: "def-3", name: "Gaming Console", category: "gaming", description: "Next-gen gaming console with controller.", emoji: "🎮" },
-            { id: "def-4", name: "Leather Wallet", category: "bags-wallets", description: "Premium leather wallet for men.", emoji: "👜" }
-        ];
-    }
-
-    const activeProducts = products.filter(p => p.active !== false);
-
-    if (activeProducts.length === 0) {
-        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #667085;"><h3>No products available</h3><p>Admin panel se products add karein.</p></div>`;
-        return;
-    }
-
-    grid.innerHTML = activeProducts.map(product => {
-        const categoryLabel = formatCategory(product.category);
-        const image = product.photos && product.photos.length > 0 ? product.photos[0] : null;
-        
-        return `
-            <article class="product-card" data-id="${escapeAttribute(product.id)}" data-category="${escapeAttribute(product.category)}" data-name="${escapeAttribute(product.name)}" data-emoji="${escapeAttribute(product.emoji)}">
-                <div class="product-image">
-                    ${image ? `<img src="${escapeAttribute(image)}" alt="${escapeAttribute(product.name)}">` : `<div class="product-placeholder">${escapeHtml(product.emoji || "📦")}</div>`}
-                </div>
-                <div class="product-info">
-                    <span class="product-category">${escapeHtml(categoryLabel)}</span>
-                    <h3>${escapeHtml(product.name)}</h3>
-                    <p class="product-description">${escapeHtml(product.description || "")}</p>
-                    <div class="product-price">Rs.100 <span>/ item</span></div>
-                    <p class="sale-note">🔥 40+ total items = Rs.50 each</p>
-                    <button type="button" class="add-to-cart-button">Add to Cart</button>
-                </div>
-            </article>
-        `;
-    }).join("");
-
-    attachProductCardListeners();
-}
-
-function attachProductCardListeners() {
-    document.querySelectorAll(".add-to-cart-button").forEach(button => {
-        if (button.dataset.listenerAttached === "true") return;
-        button.dataset.listenerAttached = "true";
-        button.addEventListener("click", function (e) {
-            e.preventDefault(); e.stopPropagation();
-            const card = button.closest(".product-card");
-            if (!card) return;
-            addToCart(card.dataset.name || "Product", 100, card.dataset.category || "general", card.dataset.emoji || "📦", card.dataset.id || "");
-        });
-    });
-
-    document.querySelectorAll(".product-card").forEach(card => {
-        if (card.dataset.detailsListenerAttached === "true") return;
-        card.dataset.detailsListenerAttached = "true";
-        card.addEventListener("click", function (e) {
-            if (e.target.closest(".add-to-cart-button")) return;
-            openProductDetails(card);
-        });
-    });
 }
 
 // Mobile Categories Tab Logic
